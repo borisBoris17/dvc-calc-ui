@@ -1,5 +1,15 @@
 .App {
   text-align: center;
+  width: 90%;
+  margin: auto;
+  margin-top: 2%;
+}
+
+.Calculator {
+  text-align: center;
+  width: 90%;
+  margin: auto;
+  margin-top: 2%;
 }
 
 .App-logo {
