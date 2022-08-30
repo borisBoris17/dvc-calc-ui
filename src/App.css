@@ -12,9 +12,18 @@
   margin-top: 2%;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.ImportRoomType {
+  text-align: center;
+  width: 90%;
+  margin: auto;
+  margin-top: 2%;
+}
+
+.ImportPoints {
+  text-align: center;
+  width: 90%;
+  margin: auto;
+  margin-top: 2%;
 }
 
 @media (prefers-reduced-motion: no-preference) {

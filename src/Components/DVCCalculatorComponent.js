@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
@@ -10,16 +10,33 @@ import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import axios from 'axios';
 
-const resorts = ['Riviera', 'Grand Floridian'];
-const roomTypes = ['Studio', 'One Bedroom', 'Two Bedroom', 'Grand Villa'];
-
-function DVCCalculatorComponent() {
-  const [checkInDate, setCheckInDate] = useState(new Date('2014-08-18T21:11:54'));
-  const [checkOutDate, setCheckOutDate] = useState(new Date('2014-08-18T21:11:54'));
-  const [selectedResort, setSelectedResort] = useState('');
-  const [selectedRoomType, setSelectedRoomType] = useState('');
+function DVCCalculatorComponent(props) {
+  const [roomTypes, setRoomTypes] = useState([]);
+  const [viewTypes, setViewTypes] = useState([]);
+  const [checkInDate, setCheckInDate] = useState(new Date('2023-09-18'));
+  const [checkOutDate, setCheckOutDate] = useState(new Date('2023-09-25'));
+  const [selectedResortId, setSelectedResortId] = useState('');
+  const [selectedRoomTypeId, setSelectedRoomTypeId] = useState('');
+  const [selectedViewTypeId, setSelectedViewTypeId] = useState('');
   const [pointsNeeded, setPointsNeeded] = useState('');
+
+  useEffect(() => {
+    if (selectedResortId) {
+      axios.get('http://localhost:3001/roomTypes/' + selectedResortId).then(resp => {
+        setRoomTypes(resp.data);
+      });
+   }
+  }, [selectedResortId]);
+
+  useEffect(() => {
+    if (selectedRoomTypeId) {
+      axios.get('http://localhost:3001/viewTypes/' + selectedRoomTypeId).then(resp => {
+        setViewTypes(resp.data);
+      });
+   }
+  }, [selectedRoomTypeId]);
 
   const handleCheckInDateChange = (newCheckInDate) => {
     setCheckInDate(newCheckInDate);
@@ -32,18 +49,31 @@ function DVCCalculatorComponent() {
   };
 
   const handleResortChange = (event) => {
-    setSelectedResort(event.target.value);
+    setSelectedResortId(event.target.value);
     setPointsNeeded('');
   };
 
   const handleRoomTypeChange = (event) => {
-    setSelectedRoomType(event.target.value);
+    setSelectedRoomTypeId(event.target.value);
+    setPointsNeeded('');
+  };
+
+  const handleViewTypeChange = (event) => {
+    setSelectedViewTypeId(event.target.value);
     setPointsNeeded('');
   };
 
   const calculatePointsNeeded = () => {
-    const randomPointNumber = Math.floor(Math.random() * 225);
-    setPointsNeeded(randomPointNumber);
+    let checkInDateYear = checkInDate.getFullYear();
+    let checkInDateMonth = checkInDate.getMonth() + 1;
+    let checkInDateDay = checkInDate.getDate();
+    let checkOutDateYear = checkOutDate.getFullYear();
+    let checkOutDateMonth = checkOutDate.getMonth() + 1;
+    let checkOutDateDay = checkOutDate.getDate();
+
+    axios.get(`http://localhost:3001/pointAmount/${selectedViewTypeId}/${checkInDateYear}-${checkInDateMonth}-${checkInDateDay}/${checkOutDateYear}-${checkOutDateMonth}-${checkOutDateDay}`).then(resp => {
+      setPointsNeeded(resp.data.numPoints);
+    });
   }
 
   return (
@@ -56,11 +86,11 @@ function DVCCalculatorComponent() {
           <Select
             labelId="resort-select-label"
             id="resort-select"
-            value={selectedResort}
+            value={selectedResortId}
             label="Resort"
             onChange={handleResortChange}
           >
-            {resorts.map(resort => <MenuItem value={resort} key={resort}>{resort}</MenuItem>)}
+            {props.resorts.map(resort => <MenuItem value={resort.resort_id} key={resort.resort_id}>{resort.name}</MenuItem>)}
           </Select>
         </FormControl>
         <FormControl fullWidth>
@@ -68,11 +98,23 @@ function DVCCalculatorComponent() {
           <Select
             labelId="room-type-select-label"
             id="room-type-select"
-            value={selectedRoomType}
-            label="Resort"
+            value={selectedRoomTypeId}
+            label="Room Type"
             onChange={handleRoomTypeChange}
           >
-            {roomTypes.map(roomType => <MenuItem value={roomType} key={roomType}>{roomType}</MenuItem>)}
+            {roomTypes.map(roomType => <MenuItem value={roomType.room_type_id} key={roomType.room_type_id}>{roomType.name}</MenuItem>)}
+          </Select>
+        </FormControl>
+        <FormControl fullWidth>
+          <InputLabel id="view-type-select-label">View Type</InputLabel>
+          <Select
+            labelId="view-type-select-label"
+            id="view-type-select"
+            value={selectedViewTypeId}
+            label="View Type"
+            onChange={handleViewTypeChange}
+          >
+            {viewTypes.map(viewType => <MenuItem value={viewType.view_type_id} key={viewType.view_type_id}>{viewType.name}</MenuItem>)}
           </Select>
         </FormControl>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
