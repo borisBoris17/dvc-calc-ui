@@ -70,7 +70,7 @@ function ImportPointsComponent(props) {
 
   const createEmptypointValue = () => {
     return {
-      point_value_id: -1,
+      point_value_id: pointValues.length * -1,
       weekday_rate: '',
       weekend_rate: '',
       start_date: new Date(),
