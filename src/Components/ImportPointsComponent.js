@@ -13,6 +13,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Button from '@mui/material/Button';
 
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
@@ -22,6 +23,7 @@ import axios from 'axios'
 function ImportPointsComponent(props) {
   const [roomTypes, setRoomTypes] = useState([]);
   const [viewTypes, setViewTypes] = useState([]);
+  const [pointValues, setPointValues] = useState([]);
   const [selectedResortId, setSelectedResortId] = useState('');
   const [selectedRoomTypeId, setSelectedRoomTypeId] = useState('');
   const [selectedViewTypeId, setSelectedViewTypeId] = useState('');
@@ -31,7 +33,7 @@ function ImportPointsComponent(props) {
       axios.get('http://localhost:3001/roomTypes/' + selectedResortId).then(resp => {
         setRoomTypes(resp.data);
       });
-   }
+    }
   }, [selectedResortId]);
 
   useEffect(() => {
@@ -39,8 +41,16 @@ function ImportPointsComponent(props) {
       axios.get('http://localhost:3001/viewTypes/' + selectedRoomTypeId).then(resp => {
         setViewTypes(resp.data);
       });
-   }
+    }
   }, [selectedRoomTypeId]);
+
+  useEffect(() => {
+    if (selectedViewTypeId) {
+      axios.get('http://localhost:3001/pointValue/' + selectedViewTypeId).then(resp => {
+        setPointValues(resp.data);
+      });
+    }
+  }, [selectedViewTypeId]);
 
   const handleResortChange = (event) => {
     setSelectedResortId(event.target.value);
@@ -54,22 +64,24 @@ function ImportPointsComponent(props) {
     setSelectedViewTypeId(event.target.value);
   }
 
-  function createData(name, calories, fat, carbs, protein) {
-    return { name, calories, fat, carbs, protein };
+  const addRow = () => {
+    setPointValues(current => [...current, createEmptypointValue()]);
   }
 
-  const rows = [
-    createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-    createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData('Eclair', 262, 16.0, 24, 6.0),
-    createData('Cupcake', 305, 3.7, 67, 4.3),
-    createData('Gingerbread', 356, 16.0, 49, 3.9),
-  ];
+  const createEmptypointValue = () => {
+    return {
+      point_value_id: -1,
+      weekday_rate: '',
+      weekend_rate: '',
+      start_date: new Date(),
+      end_date: new Date()
+    }
+  }
 
   return (
     <div className="ImportPoints">
-      <Typography variant='h3'>Import Points</Typography>
       <Stack spacing={3}>
+        <Typography variant='h3'>Import Points</Typography>
         <FormControl fullWidth>
           <InputLabel id="resort-select-label">Resort</InputLabel>
           <Select
@@ -116,19 +128,19 @@ function ImportPointsComponent(props) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
+              {pointValues.map((pointValue) => (
                 <TableRow
-                  key={row.name}
+                  key={pointValue.point_value_id}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">
                     <FormControl fullWidth>
-                      <TextField id="weekdayRateInput" variant="standard" />
+                      <TextField id="weekdayRateInput" variant="standard" value={pointValue.weekday_rate} />
                     </FormControl>
                   </TableCell>
                   <TableCell component="th" scope="row">
                     <FormControl fullWidth>
-                      <TextField id="weekendRateInput" variant="standard" />
+                      <TextField id="weekendRateInput" variant="standard" value={pointValue.weekend_rate} />
                     </FormControl>
                   </TableCell>
                   <TableCell component="th" scope="row">
@@ -137,7 +149,7 @@ function ImportPointsComponent(props) {
                         <DesktopDatePicker
                           label="Check in Date"
                           inputFormat="MM/dd/yyyy"
-                          // value={checkInDate}
+                          value={pointValue.start_date}
                           // onChange={handleCheckInDateChange}
                           renderInput={(params) => <TextField {...params} />}
                         />
@@ -150,7 +162,7 @@ function ImportPointsComponent(props) {
                         <DesktopDatePicker
                           label="Check out Date"
                           inputFormat="MM/dd/yyyy"
-                          // value={checkOutDate}
+                          value={pointValue.end_date}
                           // onChange={handleCheckOutDateChange}
                           renderInput={(params) => <TextField {...params} />}
                         />
@@ -163,6 +175,15 @@ function ImportPointsComponent(props) {
           </Table>
         </TableContainer>
       </Stack>
+      <Button variant='contained'
+        sx={{
+          width: '30%',
+          margin: 'auto',
+          marginTop: '2%',
+        }}
+        onClick={addRow}>
+        Add Row
+      </Button>
     </div>
   );
 }
