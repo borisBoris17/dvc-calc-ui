@@ -64,6 +64,17 @@ function ImportPointsComponent(props) {
     setSelectedViewTypeId(event.target.value);
   }
 
+  const handlePointValueFieldChange = (fieldUpdated, idUpdated, newValue) => {
+    setPointValues(current =>
+      current.map(pointValue => {
+        if (pointValue && pointValue.point_value_id === idUpdated) {
+          return { ...pointValue, [fieldUpdated]: newValue };
+        }
+        return pointValue;
+      }),
+    );
+  }
+
   const addRow = () => {
     setPointValues(current => [...current, createEmptypointValue()]);
   }
@@ -74,9 +85,46 @@ function ImportPointsComponent(props) {
       weekday_rate: '',
       weekend_rate: '',
       start_date: new Date(),
-      end_date: new Date()
+      end_date: new Date(),
+      view_type_id: selectedViewTypeId
     }
   }
+
+  const savePointValues = () => {
+    axios.post('http://localhost:3001/pointValue', { pointValues: formatPointValuesForSave(pointValues) }).then(resp => {
+      alert("Saved Successfully");
+    });
+  }
+
+  const formatPointValuesForSave = function (originalPointValues) {
+    return originalPointValues.map(pointValue => {
+      if (pointValue.start_date) {
+        let startDateStr = '';
+        let endDateStr = '';
+        if (typeof pointValue.start_date === 'string') {
+          let startDateFullStr = pointValue.start_date;
+          startDateStr = startDateFullStr.split('T')[0];
+          let endDateFullStr = pointValue.end_date;
+          endDateStr = endDateFullStr.split('T')[0];
+
+        } else {
+          let startDateYear = pointValue.start_date.getFullYear();
+          let startDateMonth = pointValue.start_date.getMonth() + 1;
+          let startDateDay = pointValue.start_date.getDate();
+          let endDateYear = pointValue.end_date.getFullYear();
+          let endDateMonth = pointValue.end_date.getMonth() + 1;
+          let endDateDay = pointValue.end_date.getDate();
+
+          startDateStr = `${startDateYear}-${startDateMonth}-${startDateDay}`;
+          endDateStr = `${endDateYear}-${endDateMonth}-${endDateDay}`;
+        }
+
+        return { ...pointValue, start_date: startDateStr, end_date: endDateStr};
+      } else {
+        return pointValue;
+      }
+    });
+  };
 
   return (
     <div className="ImportPoints">
@@ -135,12 +183,12 @@ function ImportPointsComponent(props) {
                 >
                   <TableCell component="th" scope="row">
                     <FormControl fullWidth>
-                      <TextField id="weekdayRateInput" variant="standard" value={pointValue.weekday_rate} />
+                      <TextField id="weekdayRateInput" variant="standard" value={pointValue.weekday_rate} onChange={(event) => handlePointValueFieldChange("weekday_rate", pointValue.point_value_id, event.target.value)} />
                     </FormControl>
                   </TableCell>
                   <TableCell component="th" scope="row">
                     <FormControl fullWidth>
-                      <TextField id="weekendRateInput" variant="standard" value={pointValue.weekend_rate} />
+                      <TextField id="weekendRateInput" variant="standard" value={pointValue.weekend_rate} onChange={(event) => handlePointValueFieldChange("weekend_rate", pointValue.point_value_id, event.target.value)} />
                     </FormControl>
                   </TableCell>
                   <TableCell component="th" scope="row">
@@ -150,7 +198,7 @@ function ImportPointsComponent(props) {
                           label="Check in Date"
                           inputFormat="MM/dd/yyyy"
                           value={pointValue.start_date}
-                          // onChange={handleCheckInDateChange}
+                          onChange={(event) => handlePointValueFieldChange("start_date", pointValue.point_value_id, event)}
                           renderInput={(params) => <TextField {...params} />}
                         />
                       </LocalizationProvider>
@@ -163,7 +211,7 @@ function ImportPointsComponent(props) {
                           label="Check out Date"
                           inputFormat="MM/dd/yyyy"
                           value={pointValue.end_date}
-                          // onChange={handleCheckOutDateChange}
+                          onChange={(event) => handlePointValueFieldChange("end_date", pointValue.point_value_id, event)}
                           renderInput={(params) => <TextField {...params} />}
                         />
                       </LocalizationProvider>
@@ -183,6 +231,15 @@ function ImportPointsComponent(props) {
         }}
         onClick={addRow}>
         Add Row
+      </Button>
+      <Button variant='contained'
+        sx={{
+          width: '30%',
+          margin: 'auto',
+          marginTop: '2%',
+        }}
+        onClick={savePointValues}>
+        Save
       </Button>
     </div>
   );
