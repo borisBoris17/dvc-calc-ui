@@ -25,10 +25,13 @@ function ImportViewTypeComponent(props) {
 
   const handleResortChange = (event) => {
     setSelectedResortId(event.target.value);
+    setSelectedRoomTypeId("");
+    setViewTypeName("");
   };
 
   const handleRoomTypeChange = (event) => {
     setSelectedRoomTypeId(event.target.value);
+    setViewTypeName("");
   }
 
   const handleViewTypeNameChange = (event) => {

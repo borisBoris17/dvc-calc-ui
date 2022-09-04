@@ -54,14 +54,20 @@ function ImportPointsComponent(props) {
 
   const handleResortChange = (event) => {
     setSelectedResortId(event.target.value);
+    setSelectedRoomTypeId("");
+    setSelectedViewTypeId("");
+    setPointValues([]);
   };
 
   const handleRoomTypeChange = (event) => {
     setSelectedRoomTypeId(event.target.value);
+    setSelectedViewTypeId("");
+    setPointValues([]);
   }
 
   const handleViewTypeChange = (event) => {
     setSelectedViewTypeId(event.target.value);
+    setPointValues([]);
   }
 
   const handlePointValueFieldChange = (fieldUpdated, idUpdated, newValue) => {
@@ -165,7 +171,8 @@ function ImportPointsComponent(props) {
             {viewTypes.map(viewType => <MenuItem value={viewType.view_type_id} key={viewType.view_type_id}>{viewType.name}</MenuItem>)}
           </Select>
         </FormControl>
-        <TableContainer >
+        {
+        pointValues.length > 0 ? <TableContainer >
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
@@ -221,7 +228,8 @@ function ImportPointsComponent(props) {
               ))}
             </TableBody>
           </Table>
-        </TableContainer>
+        </TableContainer> : ""
+      }
       </Stack>
       <Button variant='contained'
         sx={{
