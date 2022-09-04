@@ -10,6 +10,7 @@ import ImportPointsComponent from './Components/ImportPointsComponent';
 import axios from 'axios';
 import ImportRoomTypeComponent from './Components/ImportRoomTypeComponent';
 import ImportViewTypeComponent from './Components/ImportViewTypeComponent';
+import ImportFromFileComponent from './Components/ImportFromFileComponent';
 
 function App() {
   const [resorts, setResorts] = useState([]);
@@ -28,6 +29,7 @@ function App() {
           <Route path="/importPoints" element={<ImportPointsComponent resorts={resorts}/> } />
           <Route path="/importRoomType" element={<ImportRoomTypeComponent resorts={resorts}/> } />
           <Route path="/importViewType" element={<ImportViewTypeComponent resorts={resorts}/> } />
+          <Route path="/importFromFile" element={<ImportFromFileComponent />} /> 
         </Routes>
       </div>
     </Router>

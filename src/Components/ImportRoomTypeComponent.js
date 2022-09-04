@@ -16,6 +16,8 @@ function ImportRoomTypeComponent(props) {
 
   const handleResortChange = (event) => {
     setSelectedResortId(event.target.value);
+    setRoomTypeName("");
+    setRoomCapacity("");
   };
 
   const handleRoomTypeNameChange = (event) => {
