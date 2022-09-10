@@ -24,7 +24,7 @@ function DVCCalculatorComponent(props) {
 
   useEffect(() => {
     if (selectedResortId) {
-      axios.get('http://localhost:3001/roomTypes/' + selectedResortId).then(resp => {
+      axios.get('http://71.85.198.19/dvc-calc-api/roomTypes/' + selectedResortId).then(resp => {
         setRoomTypes(resp.data);
       });
    }
@@ -32,7 +32,7 @@ function DVCCalculatorComponent(props) {
 
   useEffect(() => {
     if (selectedRoomTypeId) {
-      axios.get('http://localhost:3001/viewTypes/' + selectedRoomTypeId).then(resp => {
+      axios.get('http://71.85.198.19/dvc-calc-api/viewTypes/' + selectedRoomTypeId).then(resp => {
         setViewTypes(resp.data);
       });
    }
@@ -71,7 +71,7 @@ function DVCCalculatorComponent(props) {
     let checkOutDateMonth = checkOutDate.getMonth() + 1;
     let checkOutDateDay = checkOutDate.getDate();
 
-    axios.get(`http://localhost:3001/pointAmount/${selectedViewTypeId}/${checkInDateYear}-${checkInDateMonth}-${checkInDateDay}/${checkOutDateYear}-${checkOutDateMonth}-${checkOutDateDay}`).then(resp => {
+    axios.get(`http://71.85.198.19/dvc-calc-api/pointAmount/${selectedViewTypeId}/${checkInDateYear}-${checkInDateMonth}-${checkInDateDay}/${checkOutDateYear}-${checkOutDateMonth}-${checkOutDateDay}`).then(resp => {
       setPointsNeeded(resp.data.numPoints);
     });
   }

@@ -17,7 +17,7 @@ function ImportViewTypeComponent(props) {
 
   useEffect(() => {
     if (selectedResortId) {
-      axios.get('http://localhost:3001/roomTypes/' + selectedResortId).then(resp => {
+      axios.get('http://71.85.198.19/dvc-calc-api/roomTypes/' + selectedResortId).then(resp => {
         setRoomTypes(resp.data);
       });
    }
@@ -39,7 +39,7 @@ function ImportViewTypeComponent(props) {
   }
 
   const saveRoomType = () => {
-    axios.post('http://localhost:3001/viewType', {
+    axios.post('http://71.85.198.19/dvc-calc-api/viewType', {
       name: `${viewTypeName}`,
       room_type_id: `${selectedRoomTypeId}`
     })
