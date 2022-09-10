@@ -29,7 +29,7 @@ function ImportRoomTypeComponent(props) {
   }
 
   const saveRoomType = () => {
-    axios.post('http://localhost:3001/roomType', {
+    axios.post('http://192.168.86.28:3001/dvc-calc-api/roomType', {
       name: `${roomTypeName}`,
       capacity: `${roomCapacity}`,
       resort_id: `${selectedResortId}`
