@@ -30,7 +30,7 @@ function ImportPointsComponent(props) {
 
   useEffect(() => {
     if (selectedResortId) {
-      axios.get('http://192.168.86.28:3001/dvc-calc-api/roomTypes/' + selectedResortId).then(resp => {
+      axios.get('http://71.85.198.19/dvc-calc-api/roomTypes/' + selectedResortId).then(resp => {
         setRoomTypes(resp.data);
       });
     }
@@ -38,7 +38,7 @@ function ImportPointsComponent(props) {
 
   useEffect(() => {
     if (selectedRoomTypeId) {
-      axios.get('http://192.168.86.28:3001/dvc-calc-api/viewTypes/' + selectedRoomTypeId).then(resp => {
+      axios.get('http://71.85.198.19/dvc-calc-api/viewTypes/' + selectedRoomTypeId).then(resp => {
         setViewTypes(resp.data);
       });
     }
@@ -46,7 +46,7 @@ function ImportPointsComponent(props) {
 
   useEffect(() => {
     if (selectedViewTypeId) {
-      axios.get('http://192.168.86.28:3001/dvc-calc-api/pointValue/' + selectedViewTypeId).then(resp => {
+      axios.get('http://71.85.198.19/dvc-calc-api/pointValue/' + selectedViewTypeId).then(resp => {
         setPointValues(resp.data);
       });
     }
@@ -97,7 +97,7 @@ function ImportPointsComponent(props) {
   }
 
   const savePointValues = () => {
-    axios.post('http://192.168.86.28:3001/dvc-calc-api/pointValue', { pointValues: formatPointValuesForSave(pointValues) }).then(resp => {
+    axios.post('http://71.85.198.19/dvc-calc-api/pointValue', { pointValues: formatPointValuesForSave(pointValues) }).then(resp => {
       alert("Saved Successfully");
     });
   }
