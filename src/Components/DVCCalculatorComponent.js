@@ -24,7 +24,7 @@ function DVCCalculatorComponent(props) {
 
   useEffect(() => {
     if (selectedResortId) {
-      axios.get('http://71.85.198.19/dvc-calc-api/roomTypes/' + selectedResortId).then(resp => {
+      axios.get('http://localhost:4001/dvc-calc-api/roomTypes/' + selectedResortId).then(resp => {
         setRoomTypes(resp.data);
       });
    }
@@ -32,7 +32,7 @@ function DVCCalculatorComponent(props) {
 
   useEffect(() => {
     if (selectedRoomTypeId) {
-      axios.get('http://71.85.198.19/dvc-calc-api/viewTypes/' + selectedRoomTypeId).then(resp => {
+      axios.get('http://localhost:4001/dvc-calc-api/viewTypes/' + selectedRoomTypeId).then(resp => {
         setViewTypes(resp.data);
       });
    }
