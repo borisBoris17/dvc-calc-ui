@@ -71,7 +71,7 @@ function DVCCalculatorComponent(props) {
     let checkOutDateMonth = checkOutDate.getMonth() + 1;
     let checkOutDateDay = checkOutDate.getDate();
 
-    axios.get(`http://71.85.198.19/dvc-calc-api/pointAmount/${selectedViewTypeId}/${checkInDateYear}-${checkInDateMonth}-${checkInDateDay}/${checkOutDateYear}-${checkOutDateMonth}-${checkOutDateDay}`).then(resp => {
+    axios.get(`https://dvc-calc.tucker-dev.com/dvc-calc-api/pointAmount/${selectedViewTypeId}/${checkInDateYear}-${checkInDateMonth}-${checkInDateDay}/${checkOutDateYear}-${checkOutDateMonth}-${checkOutDateDay}`).then(resp => {
       setPointsNeeded(resp.data.numPoints);
     });
   }
