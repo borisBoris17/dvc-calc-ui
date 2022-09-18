@@ -16,7 +16,7 @@ function App() {
   const [resorts, setResorts] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:4001/dvc-calc-api/resorts').then(resp => {
+    axios.get('http://dvc-calc.tucker-dev.com/dvc-calc-api/resorts').then(resp => {
       setResorts(resp.data);
     });
   }, []);
