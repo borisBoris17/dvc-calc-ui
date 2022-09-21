@@ -124,20 +124,23 @@ function DVCCalculatorComponent(props) {
           </Select>
         </FormControl>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <InputLabel id="view-type-select-label">View Type</InputLabel>
           <DesktopDatePicker
+            
             label="Check in Date"
             inputFormat="MM/dd/yyyy"
             value={checkInDate}
             onChange={handleCheckInDateChange}
-            renderInput={(params) => <TextField {...params} />}
+            renderInput={(params) => <TextField  {...params} error={checkInDate > checkOutDate} />}
             disabled={selectedViewTypeId.length === 0}
           />
           <DesktopDatePicker
+            error={checkInDate > checkOutDate}
             label="Check out Date"
             inputFormat="MM/dd/yyyy"
             value={checkOutDate}
             onChange={handleCheckOutDateChange}
-            renderInput={(params) => <TextField {...params} />}
+            renderInput={(params) => <TextField {...params} error={checkInDate > checkOutDate} helperText={checkInDate > checkOutDate ? "Check In Date Must be before Check Out Date." : ""}/>}
             disabled={selectedViewTypeId.length === 0}
           />
         </LocalizationProvider>
