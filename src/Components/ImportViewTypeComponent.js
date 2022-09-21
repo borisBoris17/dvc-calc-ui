@@ -15,6 +15,7 @@ function ImportViewTypeComponent(props) {
   const [roomTypes, setRoomTypes] = useState([]);
   const [selectedRoomTypeId, setSelectedRoomTypeId] = useState('');
   const [viewTypeName, setViewTypeName] = useState('');
+  const [validViewTypeName, setValidViewTypeName] = useState(true);
 
   useEffect(() => {
     if (selectedResortId) {
@@ -36,6 +37,11 @@ function ImportViewTypeComponent(props) {
   }
 
   const handleViewTypeNameChange = (event) => {
+    if (event.target.value === undefined || !event.target.value.match(/^[A-Za-z\s]*$/)) {
+      setValidViewTypeName(false);
+    } else {
+      setValidViewTypeName(true);
+    }
     setViewTypeName(event.target.value);
   }
 
@@ -70,6 +76,7 @@ function ImportViewTypeComponent(props) {
         <FormControl fullWidth>
           <InputLabel id="room-type-select-label">Room Type</InputLabel>
           <Select
+            disabled={selectedResortId.length === 0}
             labelId="room-type-select-label"
             id="room-type-select"
             value={selectedRoomTypeId}
@@ -79,10 +86,19 @@ function ImportViewTypeComponent(props) {
           </Select>
         </FormControl>
         <FormControl>
-          <TextField label="View Type Name" id="viewTypeNameInput" variant="outlined" onChange={handleViewTypeNameChange} value={viewTypeName} />
+          <TextField 
+            disabled={selectedRoomTypeId.length === 0}
+            error={!validViewTypeName}
+            helperText={validViewTypeName ? "" : "Please Enter letters only."}
+            label="View Type Name" 
+            id="viewTypeNameInput" 
+            variant="outlined" 
+            onChange={handleViewTypeNameChange} 
+            value={viewTypeName} />
         </FormControl>
       </Stack>
       <Button variant='contained'
+        disabled={!validViewTypeName || viewTypeName.length === 0 }
         sx={{
           width: '30%',
           margin: 'auto',
