@@ -18,7 +18,8 @@ import Button from '@mui/material/Button';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import axios from 'axios'
+import axios from 'axios';
+const config = require('../config');
 
 function ImportPointsComponent(props) {
   const [roomTypes, setRoomTypes] = useState([]);
@@ -30,7 +31,7 @@ function ImportPointsComponent(props) {
 
   useEffect(() => {
     if (selectedResortId) {
-      axios.get('https://dvc-calc.tucker-dev.com/dvc-calc-api/roomTypes/' + selectedResortId).then(resp => {
+      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/roomTypes/${selectedResortId}`).then(resp => {
         setRoomTypes(resp.data);
       });
     }
@@ -38,7 +39,7 @@ function ImportPointsComponent(props) {
 
   useEffect(() => {
     if (selectedRoomTypeId) {
-      axios.get('https://dvc-calc.tucker-dev.com/dvc-calc-api/viewTypes/' + selectedRoomTypeId).then(resp => {
+      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/viewTypes/${selectedRoomTypeId}`).then(resp => {
         setViewTypes(resp.data);
       });
     }
@@ -46,7 +47,7 @@ function ImportPointsComponent(props) {
 
   useEffect(() => {
     if (selectedViewTypeId) {
-      axios.get('https://dvc-calc.tucker-dev.com/dvc-calc-api/pointValue/' + selectedViewTypeId).then(resp => {
+      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointValue/${selectedViewTypeId}`).then(resp => {
         setPointValues(resp.data);
       });
     }
@@ -97,7 +98,7 @@ function ImportPointsComponent(props) {
   }
 
   const savePointValues = () => {
-    axios.post('https://dvc-calc.tucker-dev.com/dvc-calc-api/pointValue', { pointValues: formatPointValuesForSave(pointValues) }).then(resp => {
+    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointValue`, { pointValues: formatPointValuesForSave(pointValues) }).then(resp => {
       alert("Saved Successfully");
     });
   }

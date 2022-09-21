@@ -11,6 +11,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import axios from 'axios';
+const config = require('../config');
 
 function DVCCalculatorComponent(props) {
   const [roomTypes, setRoomTypes] = useState([]);

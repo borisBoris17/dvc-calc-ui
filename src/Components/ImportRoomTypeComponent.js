@@ -8,6 +8,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
 import axios from 'axios';
+const config = require('../config');
 
 function ImportRoomTypeComponent(props) {
   const [selectedResortId, setSelectedResortId] = useState('');
@@ -29,7 +30,7 @@ function ImportRoomTypeComponent(props) {
   }
 
   const saveRoomType = () => {
-    axios.post('https://dvc-calc.tucker-dev.com/dvc-calc-api/roomType', {
+    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/roomType`, {
       name: `${roomTypeName}`,
       capacity: `${roomCapacity}`,
       resort_id: `${selectedResortId}`

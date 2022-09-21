@@ -11,12 +11,13 @@ import axios from 'axios';
 import ImportRoomTypeComponent from './Components/ImportRoomTypeComponent';
 import ImportViewTypeComponent from './Components/ImportViewTypeComponent';
 import ImportFromFileComponent from './Components/ImportFromFileComponent';
+const config = require('./config');
 
 function App() {
   const [resorts, setResorts] = useState([]);
 
   useEffect(() => {
-    axios.get('https://dvc-calc.tucker-dev.com/dvc-calc-api/resorts').then(resp => {
+    axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/resorts`).then(resp => {
       setResorts(resp.data);
     });
   }, []);
