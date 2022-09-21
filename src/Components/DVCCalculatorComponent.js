@@ -124,9 +124,7 @@ function DVCCalculatorComponent(props) {
           </Select>
         </FormControl>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <InputLabel id="view-type-select-label">View Type</InputLabel>
           <DesktopDatePicker
-            
             label="Check in Date"
             inputFormat="MM/dd/yyyy"
             value={checkInDate}
@@ -135,7 +133,6 @@ function DVCCalculatorComponent(props) {
             disabled={selectedViewTypeId.length === 0}
           />
           <DesktopDatePicker
-            error={checkInDate > checkOutDate}
             label="Check out Date"
             inputFormat="MM/dd/yyyy"
             value={checkOutDate}
