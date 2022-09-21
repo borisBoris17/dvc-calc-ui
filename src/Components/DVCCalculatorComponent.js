@@ -28,15 +28,15 @@ function DVCCalculatorComponent(props) {
       axios.get('https://dvc-calc.tucker-dev.com/dvc-calc-api/roomTypes/' + selectedResortId).then(resp => {
         setRoomTypes(resp.data);
       });
-   }
+    }
   }, [selectedResortId]);
 
   useEffect(() => {
     if (selectedRoomTypeId) {
-      axios.get('https://dvc-calc.tucker-dev.com/dvc-calc-api/viewTypes/' + selectedRoomTypeId).then(resp => {
+      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/viewTypes/${selectedRoomTypeId}`).then(resp => {
         setViewTypes(resp.data);
       });
-   }
+    }
   }, [selectedRoomTypeId]);
 
   const handleCheckInDateChange = (newCheckInDate) => {
@@ -51,11 +51,14 @@ function DVCCalculatorComponent(props) {
 
   const handleResortChange = (event) => {
     setSelectedResortId(event.target.value);
+    setSelectedRoomTypeId('');
+    setSelectedViewTypeId('');
     setPointsNeeded('');
   };
 
   const handleRoomTypeChange = (event) => {
     setSelectedRoomTypeId(event.target.value);
+    setSelectedViewTypeId('');
     setPointsNeeded('');
   };
 
@@ -102,6 +105,7 @@ function DVCCalculatorComponent(props) {
             value={selectedRoomTypeId}
             label="Room Type"
             onChange={handleRoomTypeChange}
+            disabled={selectedResortId.length === 0}
           >
             {roomTypes.map(roomType => <MenuItem value={roomType.room_type_id} key={roomType.room_type_id}>{roomType.name}</MenuItem>)}
           </Select>
@@ -114,24 +118,30 @@ function DVCCalculatorComponent(props) {
             value={selectedViewTypeId}
             label="View Type"
             onChange={handleViewTypeChange}
+            disabled={selectedRoomTypeId.length === 0}
           >
             {viewTypes.map(viewType => <MenuItem value={viewType.view_type_id} key={viewType.view_type_id}>{viewType.name}</MenuItem>)}
           </Select>
         </FormControl>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <InputLabel id="view-type-select-label">View Type</InputLabel>
           <DesktopDatePicker
+            
             label="Check in Date"
             inputFormat="MM/dd/yyyy"
             value={checkInDate}
             onChange={handleCheckInDateChange}
-            renderInput={(params) => <TextField {...params} />}
+            renderInput={(params) => <TextField  {...params} error={checkInDate > checkOutDate} />}
+            disabled={selectedViewTypeId.length === 0}
           />
           <DesktopDatePicker
+            error={checkInDate > checkOutDate}
             label="Check out Date"
             inputFormat="MM/dd/yyyy"
             value={checkOutDate}
             onChange={handleCheckOutDateChange}
-            renderInput={(params) => <TextField {...params} />}
+            renderInput={(params) => <TextField {...params} error={checkInDate > checkOutDate} helperText={checkInDate > checkOutDate ? "Check In Date Must be before Check Out Date." : ""}/>}
+            disabled={selectedViewTypeId.length === 0}
           />
         </LocalizationProvider>
       </Stack>
