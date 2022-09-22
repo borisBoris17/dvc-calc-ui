@@ -1,5 +1,7 @@
 # Stage 0, "build-stage", based on Node.js, to build and compile the frontend
 FROM node:alpine as build-stage
+ENV REACT_APP_API_HOST dvc-calc.tucker-dev.com
+ENV REACT_APP_API_PROTOCOL https
 COPY ./nginx.conf /nginx.conf
 WORKDIR /app
 COPY package*.json /app/
