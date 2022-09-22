@@ -143,6 +143,7 @@ function DVCCalculatorComponent(props) {
         </LocalizationProvider>
       </Stack>
       <Button variant='contained'
+        disabled={selectedViewTypeId.length === 0 || checkInDate > checkOutDate}
         sx={{
           width: '30%',
           margin: 'auto',
