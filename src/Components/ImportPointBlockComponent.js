@@ -11,6 +11,9 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
@@ -20,19 +23,20 @@ const config = require('../config');
 
 function ImportPointBlockComponent(props) {
 
-  const [pointBlockGroupName, setPointBlockGroupName] = useState('');
-  const [validPointBlockGroupName, setValidPointBlockGroupName] = useState(true);
+  const [pointBlockGroups, setPointBlockGroups] = useState([]);
+  const [selectedPointBlockGroupId, setSelectedPointBlockGroupId] = useState('');
   const [valueIndex, setValueIndex] = useState('');
   const [validValueIndex, setValidValueIndex] = useState(true);
   const [dateRanges, setDateRanges] = useState('');
 
-  const handlePointBlockGroupNameChange = (event) => {
-    if (event.target.value === undefined || !event.target.value.match(/^[A-Za-z\s]*$/)) {
-      setValidPointBlockGroupName(false);
-    } else {
-      setValidPointBlockGroupName(true);
-    }
-    setPointBlockGroupName(event.target.value);
+  useEffect(() => {
+    axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointBlockGroup`).then(resp => {
+      setPointBlockGroups(resp.data);
+    });
+  }, []);
+
+  const handlePointBlockGroupChange = (event) => {
+    setSelectedPointBlockGroupId(event.target.value);
   }
 
   const handleValueIndexChange = (event) => {
@@ -68,7 +72,7 @@ function ImportPointBlockComponent(props) {
   }
 
   const savePointBlock = () => {
-    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointBlock`, { pointBlockGroupName: pointBlockGroupName, valueIndex: valueIndex, dateRanges: formatDateRangeForSave(dateRanges) }).then(resp => {
+    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointBlock`, { pointBlockGroupId: selectedPointBlockGroupId, valueIndex: valueIndex, dateRanges: formatDateRangeForSave(dateRanges) }).then(resp => {
       alert("Saved Successfully");
     });
   }
@@ -96,7 +100,7 @@ function ImportPointBlockComponent(props) {
           endDateStr = `${endDateYear}-${endDateMonth}-${endDateDay}`;
         }
 
-        return { ...dateRange, start_date: startDateStr, end_date: endDateStr};
+        return { ...dateRange, start_date: startDateStr, end_date: endDateStr };
       } else {
         return dateRange;
       }
@@ -108,14 +112,15 @@ function ImportPointBlockComponent(props) {
       <Stack spacing={3}>
         <Typography variant='h3'>Import Point Block</Typography>
         <FormControl fullWidth>
-          <TextField
-            error={!validPointBlockGroupName}
-            helperText={validPointBlockGroupName ? "" : "Please Enter letters only."}
-            label="Point Block Group Name"
-            id="pointBlockGroupNameInput"
-            variant="outlined"
-            onChange={handlePointBlockGroupNameChange}
-            value={pointBlockGroupName} />
+          <InputLabel id="point-block-group-select-label">Point Block Group</InputLabel>
+          <Select
+            labelId="point-block-group-select-label"
+            id="point-block-group-select"
+            value={selectedPointBlockGroupId}
+            label="Point Block Group"
+            onChange={handlePointBlockGroupChange}>
+            {pointBlockGroups.map(pointBlockGroup => <MenuItem value={pointBlockGroup.point_block_group_id} key={pointBlockGroup.point_block_group_id}>{pointBlockGroup.point_block_group_name}</MenuItem>)}
+          </Select>
         </FormControl>
         <FormControl fullWidth>
           <TextField
