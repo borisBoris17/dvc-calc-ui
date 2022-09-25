@@ -25,6 +25,8 @@ function ImportPointBlockComponent(props) {
 
   const [pointBlockGroups, setPointBlockGroups] = useState([]);
   const [selectedPointBlockGroupId, setSelectedPointBlockGroupId] = useState('');
+  const [pointBlockYear, setPointBlockYear] = useState('');
+  const [validPointBlockYear, setValidPointBlockYear] = useState(true);
   const [valueIndex, setValueIndex] = useState('');
   const [validValueIndex, setValidValueIndex] = useState(true);
   const [dateRanges, setDateRanges] = useState('');
@@ -46,6 +48,21 @@ function ImportPointBlockComponent(props) {
       setValidValueIndex(true);
     }
     setValueIndex(event.target.value);
+  }
+
+  const handlePointBlockYearChange = (event) => {
+    if (event.target.value.match(/^[0-9]{4}$/)) {
+      setValidPointBlockYear(true);
+    }
+    setPointBlockYear(event.target.value);
+  }
+
+  const validatePointBlockYearChange = (event) => {
+    if (event.target.value === undefined || !event.target.value.match(/^[0-9]{4}$/)) {
+      setValidPointBlockYear(false);
+    } else {
+      setValidPointBlockYear(true);
+    }
   }
 
   const handleDateRangeFieldChange = (fieldUpdated, idUpdated, newValue) => {
@@ -72,7 +89,7 @@ function ImportPointBlockComponent(props) {
   }
 
   const savePointBlock = () => {
-    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointBlock`, { pointBlockGroupId: selectedPointBlockGroupId, valueIndex: valueIndex, dateRanges: formatDateRangeForSave(dateRanges) }).then(resp => {
+    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointBlock`, { pointBlockGroupId: selectedPointBlockGroupId, valueIndex: valueIndex, pointBlockYear: pointBlockYear, dateRanges: formatDateRangeForSave(dateRanges) }).then(resp => {
       alert("Saved Successfully");
     });
   }
@@ -121,6 +138,17 @@ function ImportPointBlockComponent(props) {
             onChange={handlePointBlockGroupChange}>
             {pointBlockGroups.map(pointBlockGroup => <MenuItem value={pointBlockGroup.point_block_group_id} key={pointBlockGroup.point_block_group_id}>{pointBlockGroup.point_block_group_name}</MenuItem>)}
           </Select>
+        </FormControl>
+        <FormControl fullWidth>
+          <TextField
+            error={!validPointBlockYear}
+            helperText={validPointBlockYear ? "" : "Please Enter a number only."}
+            label="Point Block Year"
+            id="pointBlockYearInput"
+            variant="outlined"
+            onChange={handlePointBlockYearChange}
+            onBlur={validatePointBlockYearChange}
+            value={pointBlockYear} />
         </FormControl>
         <FormControl fullWidth>
           <TextField
