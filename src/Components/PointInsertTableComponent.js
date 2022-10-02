@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -9,114 +9,84 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
-
-
-const dummyRoomTypes = [{ roomTypeId: 1, roomTypeName: "Deluxe Studio", viewTypes: [{ viewTypeId: 1, viewTypeName: "Standard", weekdayRate: "", weekendRate: "" }, { viewTypeId: 2, viewTypeName: "Preferred", weekdayRate: "", weekendRate: "" }] }, { roomTypeId: 2, roomTypeName: "One Bedroom Villa", viewTypes: [{ viewTypeId: 3, viewTypeName: "Standard", weekdayRate: "", weekendRate: "" }, { viewTypeId: 4, viewTypeName: "Preferred", weekdayRate: "", weekendRate: "" }] }, { roomTypeId: 3, roomTypeName: "Two Bedroom Villa", viewTypes: [{ viewTypeId: 5, viewTypeName: "Standard", weekdayRate: "", weekendRate: "" }, { viewTypeId: 6, viewTypeName: "Preferred", weekdayRate: "", weekendRate: "" }] }];
-
+import axios from 'axios';
+const config = require('../config');
 
 function PointInsertTableComponent(props) {
-  const [roomTypes, setRoomTypes] = useState(dummyRoomTypes);
+  const [viewTypes, setViewTypes] = useState([]);
+
+
+
+  useEffect(() => {
+    if (props.roomType !== undefined && props.roomType.room_type_id !== undefined) {
+      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/viewTypes/${props.roomType.room_type_id}`).then(resp => {
+        setViewTypes(resp.data);
+      });
+    }
+  }, [props.roomsType]);
 
   const isValidNumericValue = (value) => {
     return value === undefined || value.match(/^[0-9]*$/);
   }
 
   const handleWeekdayRateChange = (event, roomTypeId, viewTypeId) => {
-    setRoomTypes(current =>
-      current.map(roomType => {
-        if (roomType && roomType.roomTypeId === roomTypeId) {
-          const newViewTypes = [];
-          roomType.viewTypes.map(viewType => {
-            if (viewType && viewType.viewTypeId === viewTypeId) {
-              newViewTypes.push({ ...viewType, weekdayRate: event.target.value });
-            } else {
-              newViewTypes.push({ ...viewType });
-            }
-          });
-          return { ...roomType, viewTypes: newViewTypes }
-        }
-        return { ...roomType };
-      })
-    );
+    
   }
 
   const handleWeekendRateChange = (event, roomTypeId, viewTypeId) => {
-    setRoomTypes(current =>
-      current.map(roomType => {
-        if (roomType && roomType.roomTypeId === roomTypeId) {
-          const newViewTypes = [];
-          roomType.viewTypes.map(viewType => {
-            if (viewType && viewType.viewTypeId === viewTypeId) {
-              newViewTypes.push({ ...viewType, weekendRate: event.target.value });
-            } else {
-              newViewTypes.push({ ...viewType });
-            }
-          });
-          return { ...roomType, viewTypes: newViewTypes }
-        }
-        return { ...roomType };
-      })
-    );
+    
   }
 
 
   return <div>
     {
-      roomTypes.length > 0 ? <TableContainer >
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-
-
+      <TableContainer >
+        <Table aria-label="simple table">
           <TableHead>
             <TableRow >
-              {roomTypes.map((roomType) => (
-                <TableCell align="center" colSpan={roomType.viewTypes.length}>{roomType.roomTypeName}</TableCell>
-              ))}
+              <TableCell align="center" colSpan={viewTypes.length}>{props.roomType.name}</TableCell>
             </TableRow>
             <TableRow>
-              {roomTypes.map((roomType) => (<>
-                {roomType.viewTypes.map((viewType) => (
-                  <TableCell align="center" >{viewType.viewTypeName}</TableCell>
-                ))}</>
+              {viewTypes.map((viewType) => (
+                <TableCell align="center" >{viewType.name}</TableCell>
               ))}
             </TableRow>
           </TableHead>
-          <TableBody><TableRow
-                // key={viewType.viewTypeId}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-            {roomTypes.map((roomType) => (<>
-              {roomType.viewTypes.map((viewType) => (<>
+          <TableBody>
+            <TableRow
+              // key={viewType.viewTypeId}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+            >
+              {viewTypes.map((viewType) => (
                 <TableCell component="th" scope="row">
-                <Stack spacing={3}>
-                  <FormControl fullWidth>
-                    <TextField
-                      error={!isValidNumericValue(viewType.weekdayRate)}
-                      helperText={isValidNumericValue(viewType.weekdayRate) ? "" : "Please Enter a number only."}
-                      label="Weekday Rate"
-                      id={"weekdayRate" + viewType.viewTypeId}
-                      variant="outlined"
-                      onChange={event => handleWeekdayRateChange(event, roomType.roomTypeId, viewType.viewTypeId)}
-                      value={viewType.weekdayRate} />
-                  </FormControl>
-                  <FormControl fullWidth>
-                    <TextField
-                      error={!isValidNumericValue(viewType.weekendRate)}
-                      helperText={isValidNumericValue(viewType.weekendRate) ? "" : "Please Enter a number only."}
-                      label="Weekend Rate"
-                      id={"weekendRate" + viewType.viewTypeId}
-                      variant="outlined"
-                      onChange={event => handleWeekendRateChange(event, roomType.roomTypeId, viewType.viewTypeId)}
-                      value={viewType.weekendRate} />
-                  </FormControl>
+                  <Stack spacing={3}>
+                    <FormControl fullWidth>
+                      <TextField
+                        error={!isValidNumericValue(viewType.weekdayRate)}
+                        helperText={isValidNumericValue(viewType.weekdayRate) ? "" : "Please Enter a number only."}
+                        label="Weekday Rate"
+                        id={"weekdayRate" + viewType.viewTypeId}
+                        variant="outlined"
+                        onChange={event => handleWeekdayRateChange(event, props.roomType.roomTypeId, viewType.viewTypeId)}
+                        value={viewType.weekdayRate} />
+                    </FormControl>
+                    <FormControl fullWidth>
+                      <TextField
+                        error={!isValidNumericValue(viewType.weekendRate)}
+                        helperText={isValidNumericValue(viewType.weekendRate) ? "" : "Please Enter a number only."}
+                        label="Weekend Rate"
+                        id={"weekendRate" + viewType.viewTypeId}
+                        variant="outlined"
+                        onChange={event => handleWeekendRateChange(event, props.roomType.roomTypeId, viewType.viewTypeId)}
+                        value={viewType.weekendRate} />
+                    </FormControl>
                   </Stack>
                 </TableCell>
-              </>
-              ))}</>
-            ))}
+              ))}
             </TableRow>
           </TableBody>
         </Table>
-      </TableContainer> : ""
+      </TableContainer>
     }
   </div>
 }

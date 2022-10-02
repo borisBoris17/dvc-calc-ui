@@ -20,7 +20,7 @@ const dummyPointBlocks = [{ pointBlockId: 1, dateRanges: [{ startDate: '09/01/20
 function ImportPointsTableComponent(props) {
 
   const [selectedResortId, setSelectedResortId] = useState('');
-  const [dateRanges, setDateRanges] = useState('');
+  const [roomTypes, setRoomTypes] = useState([]);
   const [pointBlockYear, setPointBlockYear] = useState('');
   const [validPointBlockYear, setValidPointBlockYear] = useState(true);
   const [pointBlocks, setPointBlocks] = useState(dummyPointBlocks);
@@ -31,6 +31,14 @@ function ImportPointsTableComponent(props) {
     }
     setPointBlockYear(event.target.value);
   }
+
+  useEffect(() => {
+    if (selectedResortId) {
+      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/roomTypes/${selectedResortId}`).then(resp => {
+        setRoomTypes(resp.data);
+      });
+    }
+  }, [selectedResortId]);
 
   const validatePointBlockYearChange = (event) => {
     if (event.target.value === undefined || !event.target.value.match(/^[0-9]{4}$/)) {
@@ -76,20 +84,22 @@ function ImportPointsTableComponent(props) {
         </FormControl>
         {pointBlocks.map((pointBlock) => (
           <Grid container spacing={1}
-          sx={{
-            alignItems: 'center',
-          }}>
+            sx={{
+              alignItems: 'center',
+            }}>
             <Grid item lg={1}
-                sx={{
-                  transform: 'rotate(-90deg)',
-                }}>
+              sx={{
+                transform: 'rotate(-90deg)',
+              }}>
               {pointBlock.dateRanges.map((dateRange) => (
                 <Typography variant='body2'>{dateRange.startDate}-{dateRange.endDate}</Typography>
               ))}
             </Grid>
-            <Grid item lg={11}>
-              <PointInsertTableComponent />
-            </Grid>
+            {roomTypes.map((roomType) => (
+              <Grid item lg={11 / roomTypes.length}>
+                <PointInsertTableComponent roomType={roomType} />
+              </Grid>
+            ))}
           </Grid>
         ))}
 
