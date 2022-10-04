@@ -11,11 +11,9 @@ import Select from '@mui/material/Select';
 import Grid from '@mui/material/Grid';
 import axios from 'axios';
 import PointInsertTableComponent from './PointInsertTableComponent';
+import DateRangesComponent from './DateRangesComponent';
+import e from 'cors';
 const config = require('../config');
-
-const dummyPointBlocks = [{ pointBlockId: 1, dateRanges: [{ startDate: '09/01/2023', endDate: '09/30/2023' }] },
-{ pointBlockId: 2, dateRanges: [{ startDate: '01/01/2023', endDate: '01/31/2023' }, { startDate: '05/01/2023', endDate: '05/14/2023' }] }];
-
 
 function ImportPointsTableComponent(props) {
 
@@ -23,14 +21,12 @@ function ImportPointsTableComponent(props) {
   const [roomTypes, setRoomTypes] = useState([]);
   const [pointBlockYear, setPointBlockYear] = useState('');
   const [validPointBlockYear, setValidPointBlockYear] = useState(true);
-  const [pointBlocks, setPointBlocks] = useState(dummyPointBlocks);
+  const [pointBlocks, setPointBlocks] = useState([]);
+  const [inputPointValues, setInputPointValues] = useState([]);
 
-  const handlePointBlockYearChange = (event) => {
-    if (event.target.value.match(/^[0-9]{4}$/)) {
-      setValidPointBlockYear(true);
-    }
-    setPointBlockYear(event.target.value);
-  }
+useEffect(() => {
+  console.log(inputPointValues);
+}, [inputPointValues])
 
   useEffect(() => {
     if (selectedResortId) {
@@ -39,6 +35,14 @@ function ImportPointsTableComponent(props) {
       });
     }
   }, [selectedResortId]);
+
+  useEffect(() => {
+    if (pointBlockYear && pointBlockYear.match(/^[0-9]{4}$/)) {
+      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointBlock/${selectedResortId}/${pointBlockYear}`).then(resp => {
+        setPointBlocks(resp.data);
+      });
+    }
+  }, [pointBlockYear]);
 
   const validatePointBlockYearChange = (event) => {
     if (event.target.value === undefined || !event.target.value.match(/^[0-9]{4}$/)) {
@@ -49,11 +53,80 @@ function ImportPointsTableComponent(props) {
   }
 
   const handleResortChange = (event) => {
+    setPointBlockYear('');
+    setValidPointBlockYear(true);
     setSelectedResortId(event.target.value);
   };
 
+  const handlePointBlockYearChange = (event) => {
+    if (event.target.value.match(/^[0-9]{4}$/)) {
+      setValidPointBlockYear(true);
+    }
+    setPointBlockYear(event.target.value);
+  }
+
   const savePointTable = () => {
 
+  }
+
+  const handleWeekendRateChange = (event, viewTypeId, pointBlockId) => {
+    console.log(viewTypeId, pointBlockId, event.target.value)
+    let foundMatch = false;
+    setInputPointValues(current => 
+      current.map(inputPointValue => {
+        if (inputPointValue && inputPointValue.point_block_id === pointBlockId && inputPointValue.view_type_id === viewTypeId) {
+          foundMatch = true;
+          return { ...inputPointValue, weekend_rate: event.target.value };
+        }
+        return inputPointValue;
+      }),
+    )
+    if (!foundMatch) {
+      setInputPointValues(current => [...current, createEmptypointValueFromWeekendRate()])
+    }
+  }
+
+  const handleWeekdayRateChange = (event, viewTypeId, pointBlockId) => {
+    console.log(viewTypeId, pointBlockId, event.target.value)
+    let foundMatch = false;
+    setInputPointValues(current => 
+      current.map(inputPointValue => {
+        if (inputPointValue && inputPointValue.point_block_id === pointBlockId && inputPointValue.view_type_id === viewTypeId) {
+          foundMatch = true;
+          return { ...inputPointValue, weekday_rate: event.target.value };
+        } 
+        return inputPointValue;
+      }),
+    );
+    if (!foundMatch) {
+      const newInputValues = [...inputPointValues];
+      newInputValues.push(createEmptypointValueFromWeekdayRate(viewTypeId, pointBlockId, event.target.value));
+      setInputPointValues(newInputValues);
+    }
+  }
+
+  const createEmptypointValueFromWeekendRate = (viewTypeId, pointBlockId, weekendRate) => {
+    return {
+      point_block_id: pointBlockId,
+      view_type_id: viewTypeId,
+      weekday_rate: '',
+      weekend_rate: weekendRate,
+    }
+  }
+
+  const createEmptypointValueFromWeekdayRate = (viewTypeId, pointBlockId, weekdayRate) => {
+    return {
+      point_block_id: pointBlockId,
+      view_type_id: viewTypeId,
+      weekday_rate: weekdayRate,
+      weekend_rate: '',
+    }
+  }
+
+  const savePointValues = () => {
+    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointValue/table`, { pointValuesFromTable: inputPointValues }).then(resp => {
+      alert("Saved Successfully");
+    });
   }
 
   return (
@@ -89,15 +162,13 @@ function ImportPointsTableComponent(props) {
             }}>
             <Grid item lg={1}
               sx={{
-                transform: 'rotate(-90deg)',
+                // transform: 'rotate(-90deg)'
               }}>
-              {pointBlock.dateRanges.map((dateRange) => (
-                <Typography variant='body2'>{dateRange.startDate}-{dateRange.endDate}</Typography>
-              ))}
+              <DateRangesComponent pointBlock={pointBlock} />
             </Grid>
             {roomTypes.map((roomType) => (
-              <Grid item lg={11 / roomTypes.length}>
-                <PointInsertTableComponent roomType={roomType} />
+              <Grid item lg={10 / roomTypes.length}>
+                <PointInsertTableComponent pointBlockId={pointBlock.point_block_id} roomType={roomType} handleWeekendRateChange={handleWeekendRateChange} handleWeekdayRateChange={handleWeekdayRateChange} />
               </Grid>
             ))}
           </Grid>

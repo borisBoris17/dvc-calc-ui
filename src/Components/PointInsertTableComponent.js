@@ -29,15 +29,6 @@ function PointInsertTableComponent(props) {
     return value === undefined || value.match(/^[0-9]*$/);
   }
 
-  const handleWeekdayRateChange = (event, roomTypeId, viewTypeId) => {
-    
-  }
-
-  const handleWeekendRateChange = (event, roomTypeId, viewTypeId) => {
-    
-  }
-
-
   return <div>
     {
       <TableContainer >
@@ -67,7 +58,7 @@ function PointInsertTableComponent(props) {
                         label="Weekday Rate"
                         id={"weekdayRate" + viewType.viewTypeId}
                         variant="outlined"
-                        onChange={event => handleWeekdayRateChange(event, props.roomType.roomTypeId, viewType.viewTypeId)}
+                        onChange={event => props.handleWeekdayRateChange(event, viewType.view_type_id, props.pointBlockId)}
                         value={viewType.weekdayRate} />
                     </FormControl>
                     <FormControl fullWidth>
@@ -77,7 +68,7 @@ function PointInsertTableComponent(props) {
                         label="Weekend Rate"
                         id={"weekendRate" + viewType.viewTypeId}
                         variant="outlined"
-                        onChange={event => handleWeekendRateChange(event, props.roomType.roomTypeId, viewType.viewTypeId)}
+                        onChange={event => props.handleWeekendRateChange(event, viewType.view_type_id, props.pointBlockId)}
                         value={viewType.weekendRate} />
                     </FormControl>
                   </Stack>
