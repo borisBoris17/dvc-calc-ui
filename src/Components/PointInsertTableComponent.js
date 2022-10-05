@@ -15,8 +15,6 @@ const config = require('../config');
 function PointInsertTableComponent(props) {
   const [viewTypes, setViewTypes] = useState([]);
 
-
-
   useEffect(() => {
     if (props.roomType !== undefined && props.roomType.room_type_id !== undefined) {
       axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/viewTypes/${props.roomType.room_type_id}`).then(resp => {

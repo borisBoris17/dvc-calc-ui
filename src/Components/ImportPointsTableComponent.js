@@ -24,10 +24,6 @@ function ImportPointsTableComponent(props) {
   const [pointBlocks, setPointBlocks] = useState([]);
   const [inputPointValues, setInputPointValues] = useState([]);
 
-useEffect(() => {
-  console.log(inputPointValues);
-}, [inputPointValues])
-
   useEffect(() => {
     if (selectedResortId) {
       axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/roomTypes/${selectedResortId}`).then(resp => {
