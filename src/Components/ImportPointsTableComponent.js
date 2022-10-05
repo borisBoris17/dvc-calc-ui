@@ -66,7 +66,14 @@ useEffect(() => {
   }
 
   const savePointTable = () => {
-
+    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointValue/table`, { pointValuesFromTable: inputPointValues }).then(resp => {
+      alert("Saved Successfully");
+      setSelectedResortId('')
+      setPointBlockYear('');
+      setValidPointBlockYear(true);
+      setPointBlocks([]);
+      setInputPointValues([]);
+    });
   }
 
   const handleWeekendRateChange = (event, viewTypeId, pointBlockId) => {
@@ -121,12 +128,6 @@ useEffect(() => {
       weekday_rate: weekdayRate,
       weekend_rate: '',
     }
-  }
-
-  const savePointValues = () => {
-    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointValue/table`, { pointValuesFromTable: inputPointValues }).then(resp => {
-      alert("Saved Successfully");
-    });
   }
 
   return (

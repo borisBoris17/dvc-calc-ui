@@ -85,12 +85,19 @@ function ImportPointBlockComponent(props) {
       date_range_id: (dateRanges.length + 1) * -1,
       start_date: new Date(),
       end_date: new Date(),
+      date_range_desc: '',
     }
   }
 
   const savePointBlock = () => {
     axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointBlock`, { pointBlockGroupId: selectedPointBlockGroupId, valueIndex: valueIndex, pointBlockYear: pointBlockYear, dateRanges: formatDateRangeForSave(dateRanges) }).then(resp => {
       alert("Saved Successfully");
+      setSelectedPointBlockGroupId('');
+      setPointBlockYear('');
+      setValidPointBlockYear(true);
+      setValueIndex('');
+      setValidValueIndex(true);
+      setDateRanges([]);
     });
   }
 
@@ -117,7 +124,7 @@ function ImportPointBlockComponent(props) {
           endDateStr = `${endDateYear}-${endDateMonth}-${endDateDay}`;
         }
 
-        return { ...dateRange, start_date: startDateStr, end_date: endDateStr };
+        return { ...dateRange, start_date: startDateStr, end_date: endDateStr, date_range_desc: dateRange.date_range_desc };
       } else {
         return dateRange;
       }
@@ -167,6 +174,7 @@ function ImportPointBlockComponent(props) {
                 <TableRow>
                   <TableCell>Start Date</TableCell>
                   <TableCell>End Date</TableCell>
+                  <TableCell>Description</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -199,6 +207,15 @@ function ImportPointBlockComponent(props) {
                             renderInput={(params) => <TextField {...params} />}
                           />
                         </LocalizationProvider>
+                      </FormControl>
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      <FormControl fullWidth>
+                        <TextField
+                          label="Description"
+                          variant="outlined"
+                          onChange={(event) => handleDateRangeFieldChange("date_range_desc", dateRange.date_range_id, event.target.value)}
+                          value={dateRange.date_range_desc} />
                       </FormControl>
                     </TableCell>
                   </TableRow>
