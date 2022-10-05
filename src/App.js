@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import DVCCalculatorComponent from './Components/DVCCalculatorComponent';
 import ImportPointsComponent from './Components/ImportPointsComponent';
+import ImportPointsTableComponent from './Components/ImportPointsTableComponent';
 import axios from 'axios';
 import ImportRoomTypeComponent from './Components/ImportRoomTypeComponent';
 import ImportViewTypeComponent from './Components/ImportViewTypeComponent';
@@ -29,7 +30,8 @@ function App() {
         <Routes>
           <Route path="/" element={<DVCCalculatorComponent resorts={resorts}/> } />
           <Route path="/importPoints" element={<ImportPointsComponent resorts={resorts}/> } />
-          <Route path="/importPointBlock" element={<ImportPointBlockComponent /> } />
+          <Route path="/importPointsTable" element={<ImportPointsTableComponent resorts={resorts}/> } />
+          <Route path="/importPointBlock" element={<ImportPointBlockComponent resorts={resorts} /> } />
           <Route path="/importRoomType" element={<ImportRoomTypeComponent resorts={resorts}/> } />
           <Route path="/importViewType" element={<ImportViewTypeComponent resorts={resorts}/> } />
           <Route path="/importFromFile" element={<ImportFromFileComponent />} /> 

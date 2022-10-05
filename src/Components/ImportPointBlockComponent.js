@@ -11,6 +11,9 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
@@ -20,19 +23,22 @@ const config = require('../config');
 
 function ImportPointBlockComponent(props) {
 
-  const [pointBlockGroupName, setPointBlockGroupName] = useState('');
-  const [validPointBlockGroupName, setValidPointBlockGroupName] = useState(true);
+  const [pointBlockGroups, setPointBlockGroups] = useState([]);
+  const [selectedPointBlockGroupId, setSelectedPointBlockGroupId] = useState('');
+  const [pointBlockYear, setPointBlockYear] = useState('');
+  const [validPointBlockYear, setValidPointBlockYear] = useState(true);
   const [valueIndex, setValueIndex] = useState('');
   const [validValueIndex, setValidValueIndex] = useState(true);
   const [dateRanges, setDateRanges] = useState('');
 
-  const handlePointBlockGroupNameChange = (event) => {
-    if (event.target.value === undefined || !event.target.value.match(/^[A-Za-z\s]*$/)) {
-      setValidPointBlockGroupName(false);
-    } else {
-      setValidPointBlockGroupName(true);
-    }
-    setPointBlockGroupName(event.target.value);
+  useEffect(() => {
+    axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointBlockGroup`).then(resp => {
+      setPointBlockGroups(resp.data);
+    });
+  }, []);
+
+  const handlePointBlockGroupChange = (event) => {
+    setSelectedPointBlockGroupId(event.target.value);
   }
 
   const handleValueIndexChange = (event) => {
@@ -42,6 +48,21 @@ function ImportPointBlockComponent(props) {
       setValidValueIndex(true);
     }
     setValueIndex(event.target.value);
+  }
+
+  const handlePointBlockYearChange = (event) => {
+    if (event.target.value.match(/^[0-9]{4}$/)) {
+      setValidPointBlockYear(true);
+    }
+    setPointBlockYear(event.target.value);
+  }
+
+  const validatePointBlockYearChange = (event) => {
+    if (event.target.value === undefined || !event.target.value.match(/^[0-9]{4}$/)) {
+      setValidPointBlockYear(false);
+    } else {
+      setValidPointBlockYear(true);
+    }
   }
 
   const handleDateRangeFieldChange = (fieldUpdated, idUpdated, newValue) => {
@@ -64,12 +85,19 @@ function ImportPointBlockComponent(props) {
       date_range_id: (dateRanges.length + 1) * -1,
       start_date: new Date(),
       end_date: new Date(),
+      date_range_desc: '',
     }
   }
 
   const savePointBlock = () => {
-    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointBlock`, { pointBlockGroupName: pointBlockGroupName, valueIndex: valueIndex, dateRanges: formatDateRangeForSave(dateRanges) }).then(resp => {
+    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointBlock`, { pointBlockGroupId: selectedPointBlockGroupId, valueIndex: valueIndex, pointBlockYear: pointBlockYear, dateRanges: formatDateRangeForSave(dateRanges) }).then(resp => {
       alert("Saved Successfully");
+      setSelectedPointBlockGroupId('');
+      setPointBlockYear('');
+      setValidPointBlockYear(true);
+      setValueIndex('');
+      setValidValueIndex(true);
+      setDateRanges([]);
     });
   }
 
@@ -96,7 +124,7 @@ function ImportPointBlockComponent(props) {
           endDateStr = `${endDateYear}-${endDateMonth}-${endDateDay}`;
         }
 
-        return { ...dateRange, start_date: startDateStr, end_date: endDateStr};
+        return { ...dateRange, start_date: startDateStr, end_date: endDateStr, date_range_desc: dateRange.date_range_desc };
       } else {
         return dateRange;
       }
@@ -108,14 +136,26 @@ function ImportPointBlockComponent(props) {
       <Stack spacing={3}>
         <Typography variant='h3'>Import Point Block</Typography>
         <FormControl fullWidth>
+          <InputLabel id="point-block-group-select-label">Point Block Group</InputLabel>
+          <Select
+            labelId="point-block-group-select-label"
+            id="point-block-group-select"
+            value={selectedPointBlockGroupId}
+            label="Point Block Group"
+            onChange={handlePointBlockGroupChange}>
+            {pointBlockGroups.map(pointBlockGroup => <MenuItem value={pointBlockGroup.point_block_group_id} key={pointBlockGroup.point_block_group_id}>{pointBlockGroup.point_block_group_name}</MenuItem>)}
+          </Select>
+        </FormControl>
+        <FormControl fullWidth>
           <TextField
-            error={!validPointBlockGroupName}
-            helperText={validPointBlockGroupName ? "" : "Please Enter letters only."}
-            label="Point Block Group Name"
-            id="pointBlockGroupNameInput"
+            error={!validPointBlockYear}
+            helperText={validPointBlockYear ? "" : "Please Enter a number only."}
+            label="Point Block Year"
+            id="pointBlockYearInput"
             variant="outlined"
-            onChange={handlePointBlockGroupNameChange}
-            value={pointBlockGroupName} />
+            onChange={handlePointBlockYearChange}
+            onBlur={validatePointBlockYearChange}
+            value={pointBlockYear} />
         </FormControl>
         <FormControl fullWidth>
           <TextField
@@ -134,6 +174,7 @@ function ImportPointBlockComponent(props) {
                 <TableRow>
                   <TableCell>Start Date</TableCell>
                   <TableCell>End Date</TableCell>
+                  <TableCell>Description</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -166,6 +207,15 @@ function ImportPointBlockComponent(props) {
                             renderInput={(params) => <TextField {...params} />}
                           />
                         </LocalizationProvider>
+                      </FormControl>
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      <FormControl fullWidth>
+                        <TextField
+                          label="Description"
+                          variant="outlined"
+                          onChange={(event) => handleDateRangeFieldChange("date_range_desc", dateRange.date_range_id, event.target.value)}
+                          value={dateRange.date_range_desc} />
                       </FormControl>
                     </TableCell>
                   </TableRow>
