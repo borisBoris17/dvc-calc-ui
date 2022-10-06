@@ -18,6 +18,7 @@ const config = require('../config');
 function ImportPointsTableComponent(props) {
 
   const [selectedResortId, setSelectedResortId] = useState('');
+  const [selectedGroupBlockId, setSelectedGroupBlockId] = useState('');
   const [roomTypes, setRoomTypes] = useState([]);
   const [pointBlockYear, setPointBlockYear] = useState('');
   const [validPointBlockYear, setValidPointBlockYear] = useState(true);
@@ -29,12 +30,16 @@ function ImportPointsTableComponent(props) {
       axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/roomTypes/${selectedResortId}`).then(resp => {
         setRoomTypes(resp.data);
       });
+      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/resorts/${selectedResortId}`).then(resp => {
+        console.log(resp.data[0].point_block_group_id);
+        setSelectedGroupBlockId(resp.data[0].point_block_group_id);
+      });
     }
   }, [selectedResortId]);
 
   useEffect(() => {
     if (pointBlockYear && pointBlockYear.match(/^[0-9]{4}$/)) {
-      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointBlock/${selectedResortId}/${pointBlockYear}`).then(resp => {
+      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointBlock/${selectedGroupBlockId}/${pointBlockYear}`).then(resp => {
         setPointBlocks(resp.data);
       });
     }
@@ -129,7 +134,7 @@ function ImportPointsTableComponent(props) {
   return (
     <div className="ImportPoints">
       <Stack spacing={3}>
-        <Typography variant='h3'>Import Point Block</Typography>
+        <Typography variant='h3'>Import Point Chart</Typography>
         <FormControl fullWidth>
           <InputLabel id="resort-select-label">Resort</InputLabel>
           <Select
@@ -138,7 +143,7 @@ function ImportPointsTableComponent(props) {
             value={selectedResortId}
             label="Resort"
             onChange={handleResortChange}>
-            {props.resorts.map(resort => <MenuItem value={resort.resort_id} key={resort.resort_id}>{resort.name}</MenuItem>)}
+            {props.resorts.map(resort => <MenuItem pointBlockGroupId={resort.point_block_group_id} id={"resortOption" + resort.resort_id} value={resort.resort_id} key={resort.resort_id}>{resort.name}</MenuItem>)}
           </Select>
         </FormControl>
         <FormControl fullWidth>
