@@ -12,7 +12,6 @@ import Grid from '@mui/material/Grid';
 import axios from 'axios';
 import PointInsertTableComponent from './PointInsertTableComponent';
 import DateRangesComponent from './DateRangesComponent';
-import e from 'cors';
 const config = require('../config');
 
 function ImportPointsTableComponent(props) {
@@ -43,7 +42,7 @@ function ImportPointsTableComponent(props) {
         setPointBlocks(resp.data);
       });
     }
-  }, [pointBlockYear]);
+  }, [pointBlockYear, selectedGroupBlockId]);
 
   const validatePointBlockYearChange = (event) => {
     if (event.target.value === undefined || !event.target.value.match(/^[0-9]{4}$/)) {

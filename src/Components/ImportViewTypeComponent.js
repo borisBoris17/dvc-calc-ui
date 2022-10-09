@@ -61,7 +61,7 @@ function ImportViewTypeComponent(props) {
   return (
     <div className="ImportViewType">
       <Stack spacing={3}>
-        <Typography variant='h3'>Import Room Type</Typography>
+        <Typography variant='h3'>Import View Type</Typography>
         <FormControl fullWidth>
           <InputLabel id="resort-select-label">Resort</InputLabel>
           <Select

@@ -6,7 +6,6 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 import axios from 'axios';
@@ -21,7 +20,7 @@ function PointInsertTableComponent(props) {
         setViewTypes(resp.data);
       });
     }
-  }, [props.roomsType]);
+  }, [props.roomType]);
 
   const isValidNumericValue = (value) => {
     return value === undefined || value.match(/^[0-9]*$/);
