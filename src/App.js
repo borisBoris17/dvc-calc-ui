@@ -13,14 +13,6 @@ import ImportRoomTypeComponent from './Components/ImportRoomTypeComponent';
 import ImportViewTypeComponent from './Components/ImportViewTypeComponent';
 import ImportFromFileComponent from './Components/ImportFromFileComponent';
 import ImportPointBlockComponent from './Components/ImportPointBlockComponent';
-import { AppBar, Toolbar, IconButton, Typography, Button, Link, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Drawer } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import MenuIcon from '@mui/icons-material/Menu';
-import CalculateIcon from '@mui/icons-material/Calculate';
-import BedIcon from '@mui/icons-material/Bed';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import DateRangeIcon from '@mui/icons-material/DateRange';
-import AddchartIcon from '@mui/icons-material/Addchart';
 import AppBarComponent from './Components/AppBarComponent';
 
 const config = require('./config');

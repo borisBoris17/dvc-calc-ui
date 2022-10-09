@@ -1,6 +1,5 @@
 import { React, useState } from 'react';
-import { AppBar, Toolbar, IconButton, Typography, Button, Link, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Drawer } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import { AppBar, Toolbar, IconButton, Button, Link, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Drawer } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CalculateIcon from '@mui/icons-material/Calculate';
 import BedIcon from '@mui/icons-material/Bed';
