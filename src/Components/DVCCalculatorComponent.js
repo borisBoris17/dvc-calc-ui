@@ -11,6 +11,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import axios from 'axios';
+import { TableContainer, Table, TableHead, TableBody, TableCell, TableRow, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 const config = require('../config');
 
 function DVCCalculatorComponent(props) {
@@ -22,6 +24,7 @@ function DVCCalculatorComponent(props) {
   const [selectedRoomTypeId, setSelectedRoomTypeId] = useState('');
   const [selectedViewTypeId, setSelectedViewTypeId] = useState('');
   const [pointsNeeded, setPointsNeeded] = useState('');
+  const [pinnedPoints, setPinnedPoints] = useState([]);
 
   useEffect(() => {
     if (selectedResortId) {
@@ -67,6 +70,40 @@ function DVCCalculatorComponent(props) {
     setPointsNeeded('');
   };
 
+  const getResortNameFromId = (resortId) => {
+    return props.resorts.find(resort => resort.resort_id === resortId).name;
+  }
+
+  const getRoomNameFromId = (roomTypeId) => {
+    return roomTypes.find(roomType => roomType.room_type_id === roomTypeId).name;
+  }
+
+  const getViewNameFromId = (viewTypeId) => {
+    return viewTypes.find(viewType => viewType.view_type_id === viewTypeId).name;
+  }
+
+  const addToPinnedPoints = () => {
+    setPinnedPoints(current => [...current, createPinnedPoints()]);
+  }
+
+  const createPinnedPoints = () => {
+    return {
+      index: pinnedPoints.length,
+      pointsNeeded: pointsNeeded,
+      resortName: getResortNameFromId(selectedResortId),
+      roomName: getRoomNameFromId(selectedRoomTypeId),
+      viewName: getViewNameFromId(selectedViewTypeId),
+      checkInDate: checkInDate,
+      checkOutDate: checkOutDate,
+    }
+  }
+
+  const removeFromPinnedPoints = (index) => {
+    setPinnedPoints(current => (
+      current.filter(item => item.index !== index)
+    ));
+  }
+
   const calculatePointsNeeded = () => {
     let checkInDateYear = checkInDate.getFullYear();
     let checkInDateMonth = checkInDate.getMonth() + 1;
@@ -80,11 +117,50 @@ function DVCCalculatorComponent(props) {
     });
   }
 
+  const displayPinnedPoints = () => {
+    return (
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Resort</TableCell>
+              <TableCell>Room Type</TableCell>
+              <TableCell>View Type</TableCell>
+              <TableCell>Dates</TableCell>
+              <TableCell>Points</TableCell>
+              <TableCell></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {pinnedPoints.map(pinnedPoint => (
+
+              <TableRow
+                key={pinnedPoint.index}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell component="th" scope="row">{pinnedPoint.resortName}</TableCell>
+                <TableCell>{pinnedPoint.roomName}</TableCell>
+                <TableCell>{pinnedPoint.viewName}</TableCell>
+                <TableCell>{pinnedPoint.checkInDate.toLocaleDateString('en-us', { weekday: "short", year: "numeric", month: "short", day: "numeric" }) + "-" + pinnedPoint.checkOutDate.toLocaleDateString('en-us', { weekday: "short", year: "numeric", month: "short", day: "numeric" })}</TableCell>
+                <TableCell>{pinnedPoint.pointsNeeded}</TableCell>
+                <TableCell>
+                  <IconButton onClick={() => removeFromPinnedPoints(pinnedPoint.index)}>
+                    <DeleteIcon />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    )
+  }
+
   return (
     <div className='Calculator'>
       <Stack spacing={3}>
         <Typography variant='h3'>DVC Calculator</Typography>
         {pointsNeeded ? <Typography variant='h4'>You will need {pointsNeeded} for this stay.</Typography> : ''}
+        {pinnedPoints && pinnedPoints.length > 0 ? displayPinnedPoints() : ''}
         <FormControl fullWidth>
           <InputLabel id="resort-select-label">Resort</InputLabel>
           <Select
@@ -137,7 +213,7 @@ function DVCCalculatorComponent(props) {
             inputFormat="MM/dd/yyyy"
             value={checkOutDate}
             onChange={handleCheckOutDateChange}
-            renderInput={(params) => <TextField {...params} error={checkInDate > checkOutDate} helperText={checkInDate > checkOutDate ? "Check In Date Must be before Check Out Date." : ""}/>}
+            renderInput={(params) => <TextField {...params} error={checkInDate > checkOutDate} helperText={checkInDate > checkOutDate ? "Check In Date Must be before Check Out Date." : ""} />}
             disabled={selectedViewTypeId.length === 0}
           />
         </LocalizationProvider>
@@ -146,11 +222,19 @@ function DVCCalculatorComponent(props) {
         disabled={selectedViewTypeId.length === 0 || checkInDate > checkOutDate}
         sx={{
           width: '30%',
-          margin: 'auto',
-          marginTop: '2%',
+          margin: '2%',
         }}
         onClick={calculatePointsNeeded}>
         Calculate
+      </Button>
+      <Button variant='contained'
+        disabled={pointsNeeded === undefined || pointsNeeded === ""}
+        sx={{
+          width: '30%',
+          margin: '2%',
+        }}
+        onClick={addToPinnedPoints}>
+        Pin Points
       </Button>
     </div>
   );
