@@ -21,7 +21,7 @@ function App() {
   const [resorts, setResorts] = useState([]);
 
   useEffect(() => {
-    axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/resorts`).then(resp => {
+    axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/resort`).then(resp => {
       setResorts(resp.data);
     });
   }, []);

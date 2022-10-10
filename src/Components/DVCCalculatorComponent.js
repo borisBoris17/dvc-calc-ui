@@ -28,7 +28,7 @@ function DVCCalculatorComponent(props) {
 
   useEffect(() => {
     if (selectedResortId) {
-      axios.get('https://dvc-calc.tucker-dev.com/dvc-calc-api/roomTypes/' + selectedResortId).then(resp => {
+      axios.get('https://dvc-calc.tucker-dev.com/dvc-calc-api/roomType/' + selectedResortId).then(resp => {
         setRoomTypes(resp.data);
       });
     }
@@ -36,7 +36,7 @@ function DVCCalculatorComponent(props) {
 
   useEffect(() => {
     if (selectedRoomTypeId) {
-      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/viewTypes/${selectedRoomTypeId}`).then(resp => {
+      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/viewType/${selectedRoomTypeId}`).then(resp => {
         setViewTypes(resp.data);
       });
     }
