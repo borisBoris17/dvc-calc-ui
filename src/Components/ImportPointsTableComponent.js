@@ -26,11 +26,10 @@ function ImportPointsTableComponent(props) {
 
   useEffect(() => {
     if (selectedResortId) {
-      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/roomTypes/${selectedResortId}`).then(resp => {
+      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/roomType/${selectedResortId}`).then(resp => {
         setRoomTypes(resp.data);
       });
-      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/resorts/${selectedResortId}`).then(resp => {
-        console.log(resp.data[0].point_block_group_id);
+      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/resort/${selectedResortId}`).then(resp => {
         setSelectedGroupBlockId(resp.data[0].point_block_group_id);
       });
     }

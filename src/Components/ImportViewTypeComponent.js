@@ -19,7 +19,7 @@ function ImportViewTypeComponent(props) {
 
   useEffect(() => {
     if (selectedResortId) {
-      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/roomTypes/${selectedResortId}`).then(resp => {
+      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/roomType/${selectedResortId}`).then(resp => {
         setRoomTypes(resp.data);
       });
    }

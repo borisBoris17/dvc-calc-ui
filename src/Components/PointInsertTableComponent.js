@@ -16,7 +16,7 @@ function PointInsertTableComponent(props) {
 
   useEffect(() => {
     if (props.roomType !== undefined && props.roomType.room_type_id !== undefined) {
-      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/viewTypes/${props.roomType.room_type_id}`).then(resp => {
+      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/viewType/${props.roomType.room_type_id}`).then(resp => {
         setViewTypes(resp.data);
       });
     }
