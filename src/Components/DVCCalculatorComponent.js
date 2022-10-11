@@ -28,7 +28,7 @@ function DVCCalculatorComponent(props) {
 
   useEffect(() => {
     if (selectedResortId) {
-      axios.get('https://dvc-calc.tucker-dev.com/dvc-calc-api/roomType/' + selectedResortId).then(resp => {
+      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/roomType/${selectedResortId}`).then(resp => {
         setRoomTypes(resp.data);
       });
     }
