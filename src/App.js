@@ -19,6 +19,7 @@ const config = require('./config');
 
 function App() {
   const [resorts, setResorts] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/resort`).then(resp => {
@@ -29,7 +30,7 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <AppBarComponent />
+        <AppBarComponent isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
         <Routes>
           <Route path="/" element={<DVCCalculatorComponent resorts={resorts} />} />
           <Route path="/importPoints" element={<ImportPointsComponent resorts={resorts} />} />

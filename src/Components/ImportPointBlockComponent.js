@@ -90,7 +90,13 @@ function ImportPointBlockComponent(props) {
   }
 
   const savePointBlock = () => {
-    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointBlock`, { pointBlockGroupId: selectedPointBlockGroupId, valueIndex: valueIndex, pointBlockYear: pointBlockYear, dateRanges: formatDateRangeForSave(dateRanges) }).then(resp => {
+    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointBlock`, {
+      pointBlockGroupId: selectedPointBlockGroupId, valueIndex: valueIndex, pointBlockYear: pointBlockYear, dateRanges: formatDateRangeForSave(dateRanges)
+    }, {
+      headers: {
+        'x-access-token': localStorage.getItem('token')
+      }
+    }).then(resp => {
       alert("Saved Successfully");
       setSelectedPointBlockGroupId('');
       setPointBlockYear('');

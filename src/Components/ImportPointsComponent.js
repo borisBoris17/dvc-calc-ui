@@ -98,7 +98,13 @@ function ImportPointsComponent(props) {
   }
 
   const savePointValues = () => {
-    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointValue`, { pointValues: formatPointValuesForSave(pointValues) }).then(resp => {
+    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointValue`, {
+       pointValues: formatPointValuesForSave(pointValues) 
+      }, {
+        headers: {
+          'x-access-token': localStorage.getItem('token')
+        }
+      }).then(resp => {
       alert("Saved Successfully");
     });
   }

@@ -65,7 +65,13 @@ function ImportPointsTableComponent(props) {
   }
 
   const savePointTable = () => {
-    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointValue/table`, { pointValuesFromTable: inputPointValues }).then(resp => {
+    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointValue/table`, {
+      pointValuesFromTable: inputPointValues
+    }, {
+      headers: {
+        'x-access-token': localStorage.getItem('token')
+      }
+    }).then(resp => {
       alert("Saved Successfully");
       setSelectedResortId('')
       setPointBlockYear('');
@@ -78,7 +84,7 @@ function ImportPointsTableComponent(props) {
   const handleWeekendRateChange = (event, viewTypeId, pointBlockId) => {
     console.log(viewTypeId, pointBlockId, event.target.value)
     let foundMatch = false;
-    setInputPointValues(current => 
+    setInputPointValues(current =>
       current.map(inputPointValue => {
         if (inputPointValue && inputPointValue.point_block_id === pointBlockId && inputPointValue.view_type_id === viewTypeId) {
           foundMatch = true;
@@ -95,12 +101,12 @@ function ImportPointsTableComponent(props) {
   const handleWeekdayRateChange = (event, viewTypeId, pointBlockId) => {
     console.log(viewTypeId, pointBlockId, event.target.value)
     let foundMatch = false;
-    setInputPointValues(current => 
+    setInputPointValues(current =>
       current.map(inputPointValue => {
         if (inputPointValue && inputPointValue.point_block_id === pointBlockId && inputPointValue.view_type_id === viewTypeId) {
           foundMatch = true;
           return { ...inputPointValue, weekday_rate: event.target.value };
-        } 
+        }
         return inputPointValue;
       }),
     );

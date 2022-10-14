@@ -46,6 +46,10 @@ function ImportRoomTypeComponent(props) {
       name: `${roomTypeName}`,
       capacity: `${roomCapacity}`,
       resort_id: `${selectedResortId}`
+    }, {
+      headers: {
+        'x-access-token': localStorage.getItem('token')
+      }
     })
       .then(function (response) {
         alert('Saved successfully');

@@ -45,10 +45,14 @@ function ImportViewTypeComponent(props) {
     setViewTypeName(event.target.value);
   }
 
-  const saveRoomType = () => {
+  const saveViewType = () => {
     axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/viewType`, {
       name: `${viewTypeName}`,
       room_type_id: `${selectedRoomTypeId}`
+    }, {
+      headers: {
+        'x-access-token': localStorage.getItem('token')
+      }
     })
     .then(function (response) {
       alert('Saved successfully');
@@ -104,7 +108,7 @@ function ImportViewTypeComponent(props) {
           margin: 'auto',
           marginTop: '2%',
         }}
-        onClick={saveRoomType}>
+        onClick={saveViewType}>
         Save
       </Button>
     </div>
