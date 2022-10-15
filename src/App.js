@@ -22,6 +22,9 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
+    if (localStorage.getItem('token')) {
+      setIsLoggedIn(true);
+    }
     axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/resort`).then(resp => {
       setResorts(resp.data);
     });

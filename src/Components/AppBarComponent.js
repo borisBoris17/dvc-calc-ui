@@ -99,8 +99,8 @@ function AppBarComponent(props) {
             </ListItem>
           </List>
         </Drawer>
-        <Button color="inherit" onClick={handleOpenLogin}>Login</Button>
-        <LoginComponent openLoginMenu={openLoginMenu} handleCloseLogin={handleCloseLogin} setIsLoggedIn={props.setIsLoggedIn}/>
+        {props.isLoggedIn === true ? '' : <><Button color="inherit" onClick={handleOpenLogin}>Login</Button>
+        <LoginComponent openLoginMenu={openLoginMenu} handleCloseLogin={handleCloseLogin} setIsLoggedIn={props.setIsLoggedIn}/></>}
       </Toolbar>
     </AppBar>
   )
