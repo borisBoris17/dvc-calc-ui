@@ -83,7 +83,7 @@ function LoginComponent(props) {
               </Button>
             </Grid>
             <Grid item xs={3}>
-              <Button href="/register" onClick={handleRegister}>
+              <Button onClick={handleRegister}>
                 Register
               </Button>
             </Grid>
