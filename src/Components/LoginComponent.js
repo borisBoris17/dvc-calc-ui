@@ -28,6 +28,7 @@ function LoginComponent(props) {
       username: username, password: password
     }).then(resp => {
       localStorage.setItem('token', resp.data.token);
+      props.setIsAdmin(resp.data.is_admin);
       props.setIsLoggedIn(true);
       setUsername('');
       setPassword('');
@@ -40,6 +41,8 @@ function LoginComponent(props) {
       username: username, password: password
     }).then(resp => {
       localStorage.setItem('token', resp.data.token);
+      props.setIsAdmin(resp.data.is_admin);
+      props.setIsLoggedIn(true);
       setUsername('');
       setPassword('');
       props.handleCloseLogin();

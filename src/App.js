@@ -14,16 +14,20 @@ import ImportViewTypeComponent from './Components/ImportViewTypeComponent';
 import ImportFromFileComponent from './Components/ImportFromFileComponent';
 import ImportPointBlockComponent from './Components/ImportPointBlockComponent';
 import AppBarComponent from './Components/AppBarComponent';
+import jwt_decode from "jwt-decode";
 
 const config = require('./config');
 
 function App() {
   const [resorts, setResorts] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem('token')) {
       setIsLoggedIn(true);
+      const decoded = jwt_decode(localStorage.getItem('token'));
+      setIsAdmin(decoded.is_admin);
     }
     axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/resort`).then(resp => {
       setResorts(resp.data);
@@ -33,7 +37,7 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <AppBarComponent isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+        <AppBarComponent isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} isAdmin={isAdmin} setIsAdmin={setIsAdmin} />
         <Routes>
           <Route path="/" element={<DVCCalculatorComponent resorts={resorts} />} />
           <Route path="/importPoints" element={<ImportPointsComponent resorts={resorts} />} />

@@ -65,7 +65,7 @@ function AppBarComponent(props) {
                 <ListItemText primary="DVC Calculator" />
               </ListItemButton>
             </ListItem>
-            <ListItem component={Button} href="/importRoomType" disabled={!props.isLoggedIn} >
+            <ListItem component={Button} href="/importRoomType" disabled={!props.isAdmin} >
               <ListItemButton>
                 <ListItemIcon>
                   <BedIcon></BedIcon>
@@ -73,7 +73,7 @@ function AppBarComponent(props) {
                 <ListItemText primary="Import Room Type" />
               </ListItemButton>
             </ListItem>
-            <ListItem component={Button} href="/importViewType" disabled={!props.isLoggedIn}>
+            <ListItem component={Button} href="/importViewType" disabled={!props.isAdmin}>
               <ListItemButton>
                 <ListItemIcon>
                   <VisibilityIcon></VisibilityIcon>
@@ -81,7 +81,7 @@ function AppBarComponent(props) {
                 <ListItemText primary="Import View Type" />
               </ListItemButton>
             </ListItem>
-            <ListItem component={Button} href="/importPointBlock" disabled={!props.isLoggedIn}>
+            <ListItem component={Button} href="/importPointBlock" disabled={!props.isAdmin}>
               <ListItemButton>
                 <ListItemIcon>
                   <DateRangeIcon></DateRangeIcon>
@@ -89,7 +89,7 @@ function AppBarComponent(props) {
                 <ListItemText primary="Import Point Block" />
               </ListItemButton>
             </ListItem>
-            <ListItem component={Button} href="/importPointsTable" disabled={!props.isLoggedIn}>
+            <ListItem component={Button} href="/importPointsTable" disabled={!props.isAdmin}>
               <ListItemButton>
                 <ListItemIcon>
                   <AddchartIcon></AddchartIcon>
@@ -100,7 +100,7 @@ function AppBarComponent(props) {
           </List>
         </Drawer>
         {props.isLoggedIn === true ? '' : <><Button color="inherit" onClick={handleOpenLogin}>Login</Button>
-        <LoginComponent openLoginMenu={openLoginMenu} handleCloseLogin={handleCloseLogin} setIsLoggedIn={props.setIsLoggedIn}/></>}
+        <LoginComponent openLoginMenu={openLoginMenu} handleCloseLogin={handleCloseLogin} setIsLoggedIn={props.setIsLoggedIn} setIsAdmin={props.setIsAdmin} /></>}
       </Toolbar>
     </AppBar>
   )
