@@ -1,7 +1,7 @@
 export const getTokenFromStorage = () => {
   const item = JSON.parse(localStorage.getItem('token'))
   const now = new Date().getTime();
-  if (now < item.expire) { 
+  if (item && item.expire && now < item.expire) { 
     return item;
   }
   return undefined;
