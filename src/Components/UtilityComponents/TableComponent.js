@@ -21,9 +21,7 @@ function TableComponent(props) {
               >
                 {props.headers.map((header) =>
                   <TableCell component="th" scope="row">
-                    <FormControl fullWidth>
-                      {row[header.fieldName]}
-                    </FormControl>
+                    {row[header.fieldName]}
                   </TableCell>
                 )}
               </TableRow>))}

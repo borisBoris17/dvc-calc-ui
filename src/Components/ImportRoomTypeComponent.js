@@ -11,6 +11,7 @@ import Button from '@mui/material/Button';
 import axios from 'axios';
 import TableComponent from './UtilityComponents/TableComponent';
 const config = require('../config');
+const util = require('../Utilities/util');
 
 function ImportRoomTypeComponent(props) {
   const [selectedResortId, setSelectedResortId] = useState('');
@@ -19,7 +20,6 @@ function ImportRoomTypeComponent(props) {
   const [validRoomTypeName, setValidRoomTypeName] = useState(true);
   const [roomCapacity, setRoomCapacity] = useState('');
   const [validCapacity, setValidCapacity] = useState(true);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const roomTypeHeaders = [{
     name: 'Room Type Name',
@@ -28,13 +28,12 @@ function ImportRoomTypeComponent(props) {
     name: 'Capacity',
     fieldName: 'capacity'
   }
-]
+  ]
 
   useEffect(() => {
     if (selectedResortId != undefined && selectedResortId !== '') {
       axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/roomType/${selectedResortId}`).then(resp => {
         setRoomTypes(resp.data);
-
       });
     }
   }, [selectedResortId]);
@@ -64,30 +63,27 @@ function ImportRoomTypeComponent(props) {
   }
 
   const saveRoomType = () => {
-    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/roomType`, {
-      name: `${roomTypeName}`,
-      capacity: `${roomCapacity}`,
-      resort_id: `${selectedResortId}`
-    }, {
-      headers: {
-        'x-access-token': localStorage.getItem('token')
-      }
-    })
-      .then(function (response) {
-        setRoomTypes(current => [...current, response.data])
-        handleOpenSnackbar()
+    const token = util.getTokenFromStorage();
+    if (token === undefined) {
+      props.handleOpenSnackbar('Need to Login');
+    } else {
+      axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/roomType`, {
+        name: `${roomTypeName}`,
+        capacity: `${roomCapacity}`,
+        resort_id: `${selectedResortId}`
+      }, {
+        headers: {
+          'x-access-token': token.token
+        }
       })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }
-
-  const handleOpenSnackbar = () => {
-    setOpenSnackbar(true);
-  }
-
-  const handleCloseSnackbar = () => {
-    setOpenSnackbar(false);
+        .then(function (response) {
+          setRoomTypes(current => [...current, response.data])
+          props.handleOpenSnackbar('Room Type Saved successfully.')
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
   }
 
   return (
@@ -108,7 +104,7 @@ function ImportRoomTypeComponent(props) {
         {
           roomTypes.length > 0 ?
             <FormControl fullWidth>
-              <TableComponent headers={roomTypeHeaders} rows={roomTypes} rowId={'room_type_id'} /> 
+              <TableComponent headers={roomTypeHeaders} rows={roomTypes} rowId={'room_type_id'} />
             </FormControl> : ""
         }
         <FormControl fullWidth>
@@ -144,12 +140,6 @@ function ImportRoomTypeComponent(props) {
         onClick={saveRoomType}>
         Save
       </Button>
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        message="Room Type Saved successfully"
-      />
     </div>
   );
 }
