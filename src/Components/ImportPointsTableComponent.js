@@ -13,6 +13,7 @@ import axios from 'axios';
 import PointInsertTableComponent from './PointInsertTableComponent';
 import DateRangesComponent from './DateRangesComponent';
 const config = require('../config');
+const util = require('../Utilities/util');
 
 function ImportPointsTableComponent(props) {
 
@@ -65,20 +66,25 @@ function ImportPointsTableComponent(props) {
   }
 
   const savePointTable = () => {
-    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointValue/table`, {
-      pointValuesFromTable: inputPointValues
-    }, {
-      headers: {
-        'x-access-token': localStorage.getItem('token')
-      }
-    }).then(resp => {
-      alert("Saved Successfully");
-      setSelectedResortId('')
-      setPointBlockYear('');
-      setValidPointBlockYear(true);
-      setPointBlocks([]);
-      setInputPointValues([]);
-    });
+    const token = util.getTokenFromStorage();
+    if (token === undefined) {
+      props.handleOpenSnackbar('Need to Login');
+    } else {
+      axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointValue/table`, {
+        pointValuesFromTable: inputPointValues
+      }, {
+        headers: {
+          'x-access-token': token.token
+        }
+      }).then(resp => {
+        props.handleOpenSnackbar("Podints Saved Successfully");
+        setSelectedResortId('')
+        setPointBlockYear('');
+        setValidPointBlockYear(true);
+        setPointBlocks([]);
+        setInputPointValues([]);
+      });
+    }
   }
 
   const handleWeekendRateChange = (event, viewTypeId, pointBlockId) => {

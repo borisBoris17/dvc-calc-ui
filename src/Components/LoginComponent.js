@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import axios from 'axios';
 const config = require('../config');
+const util = require('../Utilities/util');
 
 const modalStyle = {
   position: 'absolute',
@@ -27,7 +28,7 @@ function LoginComponent(props) {
     axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/account/login`, {
       username: username, password: password
     }).then(resp => {
-      localStorage.setItem('token', resp.data.token);
+      util.addTokenToStorage(resp.data.token);
       props.setIsAdmin(resp.data.is_admin);
       props.setIsLoggedIn(true);
       setUsername('');
@@ -40,7 +41,7 @@ function LoginComponent(props) {
     axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/account`, {
       username: username, password: password
     }).then(resp => {
-      localStorage.setItem('token', resp.data.token);
+      util.addTokenToStorage(resp.data.token);
       props.setIsAdmin(resp.data.is_admin);
       props.setIsLoggedIn(true);
       setUsername('');

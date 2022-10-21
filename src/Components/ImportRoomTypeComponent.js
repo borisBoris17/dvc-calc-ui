@@ -1,5 +1,6 @@
-import { React, useState } from 'react';
+import { React, useEffect, useState } from 'react';
 import Stack from '@mui/material/Stack';
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Snackbar } from '@mui/material'
 import Typography from '@mui/material/Typography';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -8,14 +9,34 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
 import axios from 'axios';
+import TableComponent from './UtilityComponents/TableComponent';
 const config = require('../config');
+const util = require('../Utilities/util');
 
 function ImportRoomTypeComponent(props) {
   const [selectedResortId, setSelectedResortId] = useState('');
+  const [roomTypes, setRoomTypes] = useState([]);
   const [roomTypeName, setRoomTypeName] = useState('');
   const [validRoomTypeName, setValidRoomTypeName] = useState(true);
   const [roomCapacity, setRoomCapacity] = useState('');
   const [validCapacity, setValidCapacity] = useState(true);
+
+  const roomTypeHeaders = [{
+    name: 'Room Type Name',
+    fieldName: 'name'
+  }, {
+    name: 'Capacity',
+    fieldName: 'capacity'
+  }
+  ]
+
+  useEffect(() => {
+    if (selectedResortId != undefined && selectedResortId !== '') {
+      axios.get(`${config.api.protocol}://${config.api.host}/dvc-calc-api/roomType/${selectedResortId}`).then(resp => {
+        setRoomTypes(resp.data);
+      });
+    }
+  }, [selectedResortId]);
 
   const handleResortChange = (event) => {
     setSelectedResortId(event.target.value);
@@ -42,21 +63,27 @@ function ImportRoomTypeComponent(props) {
   }
 
   const saveRoomType = () => {
-    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/roomType`, {
-      name: `${roomTypeName}`,
-      capacity: `${roomCapacity}`,
-      resort_id: `${selectedResortId}`
-    }, {
-      headers: {
-        'x-access-token': localStorage.getItem('token')
-      }
-    })
-      .then(function (response) {
-        alert('Saved successfully');
+    const token = util.getTokenFromStorage();
+    if (token === undefined) {
+      props.handleOpenSnackbar('Need to Login');
+    } else {
+      axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/roomType`, {
+        name: `${roomTypeName}`,
+        capacity: `${roomCapacity}`,
+        resort_id: `${selectedResortId}`
+      }, {
+        headers: {
+          'x-access-token': token.token
+        }
       })
-      .catch(function (error) {
-        console.log(error);
-      });
+        .then(function (response) {
+          setRoomTypes(current => [...current, response.data])
+          props.handleOpenSnackbar('Room Type Saved successfully.')
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
   }
 
   return (
@@ -74,6 +101,12 @@ function ImportRoomTypeComponent(props) {
             {props.resorts.map(resort => <MenuItem value={resort.resort_id} key={resort.resort_id}>{resort.name}</MenuItem>)}
           </Select>
         </FormControl>
+        {
+          roomTypes.length > 0 ?
+            <FormControl fullWidth>
+              <TableComponent headers={roomTypeHeaders} rows={roomTypes} rowId={'room_type_id'} />
+            </FormControl> : ""
+        }
         <FormControl fullWidth>
           <TextField
             disabled={selectedResortId.length === 0}
@@ -90,10 +123,10 @@ function ImportRoomTypeComponent(props) {
             disabled={selectedResortId.length === 0}
             error={!validCapacity}
             helperText={validCapacity ? "" : "Please Enter a number only."}
-            label="Room Capacity" 
-            id="roomCapacityInput" 
-            variant="outlined" 
-            onChange={handleRoomCapacityChange} 
+            label="Room Capacity"
+            id="roomCapacityInput"
+            variant="outlined"
+            onChange={handleRoomCapacityChange}
             value={roomCapacity} />
         </FormControl>
       </Stack>

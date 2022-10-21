@@ -14,12 +14,14 @@ import Button from '@mui/material/Button';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-
+import IconButton from '@mui/material/IconButton';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 const config = require('../config');
+const util = require('../Utilities/util')
 
 function ImportPointBlockComponent(props) {
 
@@ -80,6 +82,12 @@ function ImportPointBlockComponent(props) {
     setDateRanges(current => [...current, createEmptyDateRange()]);
   }
 
+  const removeFromDateRanges = (index) => {
+    setDateRanges(current => (
+      current.filter(item => item.date_range_id !== index)
+    ));
+  }
+
   const createEmptyDateRange = () => {
     return {
       date_range_id: (dateRanges.length + 1) * -1,
@@ -90,21 +98,26 @@ function ImportPointBlockComponent(props) {
   }
 
   const savePointBlock = () => {
-    axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointBlock`, {
-      pointBlockGroupId: selectedPointBlockGroupId, valueIndex: valueIndex, pointBlockYear: pointBlockYear, dateRanges: formatDateRangeForSave(dateRanges)
-    }, {
-      headers: {
-        'x-access-token': localStorage.getItem('token')
-      }
-    }).then(resp => {
-      alert("Saved Successfully");
-      setSelectedPointBlockGroupId('');
-      setPointBlockYear('');
-      setValidPointBlockYear(true);
-      setValueIndex('');
-      setValidValueIndex(true);
-      setDateRanges([]);
-    });
+    const token = util.getTokenFromStorage();
+    if (token === undefined) {
+      props.handleOpenSnackbar('Need to Login');
+    } else {
+      axios.post(`${config.api.protocol}://${config.api.host}/dvc-calc-api/pointBlock`, {
+        pointBlockGroupId: selectedPointBlockGroupId, valueIndex: valueIndex, pointBlockYear: pointBlockYear, dateRanges: formatDateRangeForSave(dateRanges)
+      }, {
+        headers: {
+          'x-access-token': token.token
+        }
+      }).then(resp => {
+        props.handleOpenSnackbar("Point Block Saved Successfully");
+        setSelectedPointBlockGroupId('');
+        setPointBlockYear('');
+        setValidPointBlockYear(true);
+        setValueIndex('');
+        setValidValueIndex(true);
+        setDateRanges([]);
+      });
+    }
   }
 
   const formatDateRangeForSave = function (originalDateRanges) {
@@ -224,6 +237,11 @@ function ImportPointBlockComponent(props) {
                           value={dateRange.date_range_desc} />
                       </FormControl>
                     </TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => removeFromDateRanges(dateRange.date_range_id)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -236,6 +254,7 @@ function ImportPointBlockComponent(props) {
           width: '30%',
           margin: 'auto',
           marginTop: '2%',
+          marginRight: '1%',
         }}
         onClick={addRow}>
         Add Date Range
@@ -245,6 +264,7 @@ function ImportPointBlockComponent(props) {
           width: '30%',
           margin: 'auto',
           marginTop: '2%',
+          marginLeft: '1%',
         }}
         onClick={savePointBlock}>
         Save
